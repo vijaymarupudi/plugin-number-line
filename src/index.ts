@@ -6,9 +6,55 @@ declare global {
   }
 }
 
-const { Application } = window.PIXI
+const { Application, Graphics, Container, Text } = window.PIXI
 
 import { version } from "../package.json";
+
+function buildLine(graphics, startx=0, starty=0, endx=100, endy=0)
+{
+    // Draw horizontal line
+
+    // Move to top of the line
+    graphics
+        .moveTo(startx, starty)
+        // Draw down to bottom
+        .lineTo(endx,endy);
+
+    return graphics;
+}
+
+function render(app) {
+
+    // Create horizontal line
+    const whiteLine = buildLine(new Graphics(),1,0,150,0).stroke({ color: 0xffffff, pixelLine: true, width: 1 });
+
+    const redLine = buildLine(new Graphics(),150,0,300,0).stroke({ color: 0xff0000, pixelLine: true, width: 1 });
+
+    const redHandle = buildLine(new Graphics(),1,-50,1,50).stroke({ color: 0xff0000, pixelLine: true, width: 1 });
+
+    // Create a container to hold both grids
+    const container = new Container();
+
+    container.addChild(whiteLine,redLine,redHandle);
+
+    // Center the container on screen
+    container.x = app.screen.width / 5;
+    container.y = app.screen.height / 2;
+    app.stage.addChild(container);
+
+    // Add descriptive label
+    const label = new Text({
+        text: 'Number Line Task',
+        style: { fill: 0xffffff },
+    });
+
+    // Position label in top-left corner
+    label.position.set(20, 20);
+    label.width = app.screen.width - 40;
+    label.scale.y = label.scale.x;
+    app.stage.addChild(label);
+
+}
 
 const info = <const>{
   name: "plugin-number-line",
@@ -51,20 +97,26 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
 
   constructor(private jsPsych: JsPsych) {}
 
-  async trial(display_element: HTMLElement, trial: TrialType<Info>) {
+  trial(display_element: HTMLElement, trial: TrialType<Info>) {
 
-    const app = new Application();
+
+    (async () => {
+
+      const app = new Application();
 
     // Initialize the application
-    await app.init({ background: '#1099bb', resizeTo: window });
+    await app.init({ background: '#000000', resizeTo: window });
 
-    console.log(app)
+    display_element.appendChild(app.canvas)
 
-    // data saving
-    var trial_data = {
-      data1: 99, // Make sure this type and name matches the information for data1 in the data object contained within the info const.
-      data2: "hello world!", // Make sure this type and name matches the information for data2 in the data object contained within the info const.
-    };
+    render(app)
+
+//     display_element.innerHTML = "Hello"
+
+    })()
+
+    
+    
     // end trial
     // this.jsPsych.finishTrial(trial_data);
   }
