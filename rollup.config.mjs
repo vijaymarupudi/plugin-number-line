@@ -1,3 +1,7 @@
 import { makeRollupConfig } from "@jspsych/config/rollup";
 
-export default makeRollupConfig("jsPsychPluginNumberLine");
+const config = makeRollupConfig("jsPsychPluginNumberLine");
+
+// config.output.globals = {'PIXI': 'pixi.js'}
+
+export default config

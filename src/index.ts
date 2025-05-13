@@ -1,5 +1,13 @@
 import { JsPsych, JsPsychPlugin, ParameterType, TrialType } from "jspsych";
 
+declare global {
+  interface Window {
+    PIXI: any
+  }
+}
+
+const { Application } = window.PIXI
+
 import { version } from "../package.json";
 
 const info = <const>{
@@ -43,14 +51,22 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
 
   constructor(private jsPsych: JsPsych) {}
 
-  trial(display_element: HTMLElement, trial: TrialType<Info>) {
+  async trial(display_element: HTMLElement, trial: TrialType<Info>) {
+
+    const app = new Application();
+
+    // Initialize the application
+    await app.init({ background: '#1099bb', resizeTo: window });
+
+    console.log(app)
+
     // data saving
     var trial_data = {
       data1: 99, // Make sure this type and name matches the information for data1 in the data object contained within the info const.
       data2: "hello world!", // Make sure this type and name matches the information for data2 in the data object contained within the info const.
     };
     // end trial
-    this.jsPsych.finishTrial(trial_data);
+    // this.jsPsych.finishTrial(trial_data);
   }
 }
 
