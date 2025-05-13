@@ -7,15 +7,12 @@ const info = <const>{
   version: version,
   parameters: {
     /** Provide a clear description of the parameter_name that could be used as documentation. We will eventually use these comments to automatically build documentation and produce metadata. */
-    parameter_name: {
+    reaction_time: {
       type: ParameterType.INT, // BOOL, STRING, INT, FLOAT, FUNCTION, KEY, KEYS, SELECT, HTML_STRING, IMAGE, AUDIO, VIDEO, OBJECT, COMPLEX
-      default: undefined,
+      default: 300,
     },
     /** Provide a clear description of the parameter_name2 that could be used as documentation. We will eventually use these comments to automatically build documentation and produce metadata. */
-    parameter_name2: {
-      type: ParameterType.IMAGE,
-      default: undefined,
-    },
+
   },
   data: {
     /** Provide a clear description of the data1 that could be used as documentation. We will eventually use these comments to automatically build documentation and produce metadata. */
