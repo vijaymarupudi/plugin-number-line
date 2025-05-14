@@ -57,6 +57,8 @@ const { Application, Graphics, Container, Text } = window.PIXI
 
 import { version } from "../package.json";
 
+
+
 function addSlider(app: typeof Application.prototype, type = "universal", label_min, label_max, start_tick, line_length, custom_ticks, stimulus) {
   const stageWidth = app.screen.width;
   const stageHeight = app.screen.height;
@@ -74,6 +76,8 @@ function addSlider(app: typeof Application.prototype, type = "universal", label_
   startTick.y = -4 * 4;
   endTick.x = sliderWidth - 2;
   endTick.y = -4 * 4;
+
+
 
   for (let i = 0; i < custom_ticks.length; i++) {
     const [xi, yi] = custom_ticks[i];
@@ -167,7 +171,7 @@ function addSlider(app: typeof Application.prototype, type = "universal", label_
 
     const localX = slider.toLocal(e.global).x;
     if (type === "universal") {
-      handle.x = Math.max(0, localX);
+      handle.x = Math.max(- handle.width / 2, localX);
     } else if (type === "bounded") {
       handle.x = Math.max(- handle.width / 2, Math.min(localX, sliderWidth - handle.width / 2));
     } else if (type === "unbounded") {
@@ -191,7 +195,14 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
   trial(display_element: HTMLElement, trial: TrialType<Info>) {
     (async () => {
       const app = new Application();
-      await app.init({ background: '#DDDDDD', resizeTo: window });
+
+      let canvas_width = 600
+      let canvas_height = 300
+      await app.init({
+        background: '#DDDDDD',
+        width: canvas_width,     // desired canvas width
+        height:canvas_height,    // desired canvas height
+      });
       display_element.appendChild(app.canvas);
 
       let label_min = trial.label_min;
