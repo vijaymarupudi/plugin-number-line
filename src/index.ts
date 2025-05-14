@@ -4,17 +4,25 @@ const info = <const>{
   name: "plugin-number-line",
   version: version,
   parameters: {
+    text_color: {
+      type: ParameterType.STRING,
+      default: '0x000000',
+    },
+    response_max_length: {
+      type: ParameterType.INT,
+      default: 400,
+    },
     label_min: {
       type: ParameterType.STRING,
-      default: 1,
+      default: [],
     },
     label_max: {
       type: ParameterType.STRING,
-      default: 10,
+      default: [],
     },
     stimulus: {
       type: ParameterType.STRING,
-      default: 7,
+      default: [],
     },
     line_type: {
       type: ParameterType.STRING,
@@ -24,13 +32,21 @@ const info = <const>{
       type: ParameterType.OBJECT,
       default: [],
     },
+    canvas_width: {
+      type: ParameterType.STRING,
+      default: 600,
+    },
+    canvas_height: {
+      type: ParameterType.STRING,
+      default: 300,
+    },
     start_tick_coords: {
       type: ParameterType.OBJECT,
-      default: [50, 20],
+      default: [50, 150],
     },
     line_length: {
       type: ParameterType.INT,
-      default: 100,
+      default: 250,
     },
     title: {
       type: ParameterType.STRING,
@@ -61,7 +77,9 @@ const { Application, Graphics, Container, Text } = window.PIXI
 
 import { version } from "../package.json";
 
-function addSlider(app: typeof Application.prototype, line_type, label_min, label_max, start_tick, line_length, custom_ticks, stimulus, response_max_length) {
+
+
+function addSlider(app: typeof Application.prototype, line_type, label_min, label_max, start_tick, line_length, custom_ticks, stimulus, text_color, response_max_length ) {
   const stageWidth = app.screen.width;
   const stageHeight = app.screen.height;
   app.stage.hitArea = app.screen;
@@ -106,7 +124,7 @@ function addSlider(app: typeof Application.prototype, line_type, label_min, labe
   if (line_type == "unbounded") {
     handle.x = sliderWidth  - handle.width / 2;
   } else {
-    handle.x =  - handle.width / 2;
+    handle.x = 0 - handle.width / 2;
   }
 
   const redLine = new Graphics();
@@ -122,7 +140,7 @@ function addSlider(app: typeof Application.prototype, line_type, label_min, labe
   // Add labels
   const startLabel = new Text({
     text: label_min,
-    style: { fill: '#ffffff', fontSize: 14, fontFamily: 'Arial' },
+    style: { fill: text_color, fontSize: 14, fontFamily: 'Arial' },
   });
   startLabel.anchor.set(0.5, 0);
   startLabel.x = 0;
@@ -131,7 +149,7 @@ function addSlider(app: typeof Application.prototype, line_type, label_min, labe
 
   const endLabel = new Text({
     text: label_max,
-    style: { fill: '#ffffff', fontSize: 14, fontFamily: 'Arial' },
+    style: { fill: text_color, fontSize: 14, fontFamily: 'Arial' },
   });
   endLabel.anchor.set(0.5, 0);
   endLabel.x = 0;
@@ -140,7 +158,7 @@ function addSlider(app: typeof Application.prototype, line_type, label_min, labe
 
   const stimulus_text = new Text({
     text: stimulus,
-    style: { fill: '#ffffff', fontSize: 14, fontFamily: 'Arial' },
+    style: { fill: text_color, fontSize: 14, fontFamily: 'Arial' },
   });
   stimulus_text.anchor.set(0.5, 0);
   stimulus_text.x = 0;
@@ -173,11 +191,11 @@ function addSlider(app: typeof Application.prototype, line_type, label_min, labe
 
     const localX = slider.toLocal(e.global).x;
     if (line_type === "universal") {
-      handle.x = Math.min(response_max_length, Math.max(- handle.width / 2, localX));
+      handle.x = Math.min(response_max_length, Math.max(0, localX)) - handle.width / 2;
     } else if (line_type === "bounded") {
-      handle.x = Math.max(- handle.width / 2, Math.min(localX, sliderWidth - handle.width / 2));
+      handle.x = Math.max(0, Math.min(localX, sliderWidth )) - handle.width / 2;
     } else if (line_type === "unbounded") {
-      handle.x = Math.min(response_max_length, Math.max(- handle.width / 2, Math.max(localX, sliderWidth - handle.width / 2)));
+      handle.x = Math.min(response_max_length, Math.max(0, Math.max(localX, sliderWidth))) - handle.width / 2;
     }
 
     redLine.clear()
@@ -198,8 +216,8 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
     (async () => {
       const app = new Application();
 
-      let canvas_width = 600
-      let canvas_height = 300
+      let canvas_width = trial.canvas_width
+      let canvas_height = trial.canvas_height
       await app.init({
         background: '#DDDDDD',
         width: canvas_width,     // desired canvas width
@@ -214,9 +232,9 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
       let custom_ticks = trial.custom_ticks;
       let start_tick = trial.start_tick_coords;
       let line_length = trial.line_length;
-      let response_max_length = 450;
-      
-      addSlider(app, line_type, label_min, label_max, start_tick, line_length, custom_ticks, stimulus, response_max_length);
+      let text_color = trial.text_color;
+      let response_max_length = trial.response_max_length;
+      addSlider(app, line_type, label_min, label_max, start_tick, line_length, custom_ticks, stimulus, text_color, response_max_length);
     })();
   }
 }

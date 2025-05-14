@@ -20,11 +20,14 @@
     type: jsPsychPluginNumberLine,
     label_min: "0",
     label_max: "1000",
-    stimulus: "75",
     line_type: "universal",
-    start_tick_coords: [20, 60],
-    line_length: 400,
-    title: "Estimate the location of the number"
+    start_tick_coords: [50, 150],
+    canvas_width: 600,
+    canvas_height: 300,
+    line_length: 250,
+    title: "Estimate the location of the number",
+    text_color: '0x0044BB',
+    response_max_length: 400
   };
 
   jsPsych.run([trial])
