@@ -26,7 +26,7 @@ function addSlider(app: typeof Application.prototype, type = "universal", label_
   endTick.x = sliderWidth - 2;
   endTick.y = -4 * 4;
 
-  const handle = new Graphics().circle(0, 0, 8).fill({ color: 0xffffff });
+  const handle = new Graphics().rect(0, 0, 4, 4*8).fill({ color: 0xffffff });
   handle.y = slider.height / 2;
 
   
@@ -59,6 +59,46 @@ function addSlider(app: typeof Application.prototype, type = "universal", label_
   slider.addChild(handle);
 
   // slider.setChildIndex(redLine, 0);
+  const startLabel = new Text({
+    text: label_min,
+    style: {
+      fill: '#ffffff',
+      fontSize: 14,
+      fontFamily: 'Arial',
+    },
+  });
+  startLabel.anchor.set(0.5, 0); // center horizontally
+  startLabel.x = 0;
+  startLabel.y =  startTick.height + 5 ;
+  startTick.addChild(startLabel); // or app.stage.addChild(startLabel);
+
+  const endLabel = new Text({
+    text: label_max,
+    style: {
+      fill: '#ffffff',
+      fontSize: 14,
+      fontFamily: 'Arial',
+    },
+  });
+  endLabel.anchor.set(0.5, 0); // center horizontally
+  endLabel.x = 0;
+  endLabel.y =  endTick.height + 5 ;
+  endTick.addChild(endLabel); // or app.stage.addChild(startLabel);
+
+  const stimulus_text = new Text({
+    text: stimulus,
+    style: {
+      fill: '#ffffff',
+      fontSize: 14,
+      fontFamily: 'Arial',
+    },
+  });
+  stimulus_text.anchor.set(0.5, 0); // center horizontally
+  stimulus_text.x = 0;
+  stimulus_text.y =  startLabel.height + 5 ;
+  startLabel.addChild(stimulus_text); // or app.stage.addChild(startLabel);
+
+
   
 
 
@@ -134,11 +174,12 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
       await app.init({ background: '#DDDDDD', resizeTo: window });
       display_element.appendChild(app.canvas);
 
-      let label_min = "hee"
-      let label_max = 10
+      let label_min = "heee"
+      let label_max = "hooo"
       let startPos = 0 
       let endPos = 0
-      addSlider(app, "universal", label_min, label_max, startPos, endPos, ""); // choose "universal", "bounded", or "unbounded"
+      let stimulus = "hello"
+      addSlider(app, "universal", label_min, label_max, startPos, endPos, stimulus); // choose "universal", "bounded", or "unbounded"
     })();
   }
 }
