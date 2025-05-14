@@ -16,6 +16,10 @@ const info = <const>{
       type: ParameterType.STRING,
       default: 7,
     },
+    line_type: {
+      type: ParameterType.STRING,
+      default: "universal",
+    },
     custom_ticks: {
       type: ParameterType.OBJECT,
       default: [],
@@ -207,12 +211,13 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
 
       let label_min = trial.label_min;
       let label_max = trial.label_max;
+      let line_type = trial.line_type;
       let stimulus = trial.stimulus;
       let custom_ticks = trial.custom_ticks;
       let start_tick = trial.start_tick_coords;
       let line_length = trial.line_length;
       
-      addSlider(app, "unbounded", label_min, label_max, start_tick, line_length, custom_ticks, stimulus);
+      addSlider(app, line_type, label_min, label_max, start_tick, line_length, custom_ticks, stimulus);
     })();
   }
 }
