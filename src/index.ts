@@ -50,7 +50,7 @@ function addSlider(app: typeof Application.prototype, type = "universal", label_
 
   handle.y = 0;
 
-  if (type === "unbounded") {
+  if (type == "unbounded") {
     handle.x = sliderWidth  - handle.width / 2;
   } else {
     handle.x =  - handle.width / 2;
@@ -127,7 +127,6 @@ function addSlider(app: typeof Application.prototype, type = "universal", label_
       handle.x = Math.max(- handle.width / 2, Math.max(localX, sliderWidth - handle.width / 2));
     }
 
-
     redLine.clear()
       .moveTo(0, 2)
       .lineTo(handle.x, 2)
@@ -136,8 +135,6 @@ function addSlider(app: typeof Application.prototype, type = "universal", label_
   });
 
 }
-
-
 
 const info = <const>{
   name: "plugin-number-line",
@@ -182,10 +179,10 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
       let startPos = 0 
       let endPos = 0
       let stimulus = "7"
-      let custom_ticks = [[0.125, "12.5%"], [0.25, "25%"], [0.375, "37.5%"], [0.5, "50%"],  [0.625, "62.5%"], [0.75, "75%"], [0.875, "87.5%"], [0.9, "90%"]]
+      let custom_ticks = [[0.125, "12.5%"], [0.25, "25%"], [0.375, "37.5%"], [0.5, "50%"],  [0.625, "62.5%"], [0.75, "75%"], [0.875, "87.5%"]]
       let start_tick = 100
       let line_length = 500
-      addSlider(app, "universal", label_min, label_max, start_tick, line_length, custom_ticks, stimulus); // choose "universal", "bounded", or "unbounded"
+      addSlider(app, "unbounded", label_min, label_max, start_tick, line_length, custom_ticks, stimulus); // choose "universal", "bounded", or "unbounded"
     })();
   }
 }
