@@ -10,34 +10,7 @@ const { Application, Graphics, Container, Text } = window.PIXI
 
 import { version } from "../package.json";
 
-function buildLine(graphics, startx=0, starty=0, endx=100, endy=0) {
-  graphics.moveTo(startx, starty).lineTo(endx,endy);
-  return graphics;
-}
-
-function render(app) {
-  const whiteLine = buildLine(new Graphics(),1,0,150,0).stroke({ color: 0xffffff, pixelLine: true, width: 1 });
-  const redLine = buildLine(new Graphics(),150,0,300,0).stroke({ color: 0xff0000, pixelLine: true, width: 1 });
-  const redHandle = buildLine(new Graphics(),1,-50,1,50).stroke({ color: 0xff0000, pixelLine: true, width: 1 });
-
-  const container = new Container();
-  container.addChild(whiteLine, redLine, redHandle);
-  container.x = app.screen.width / 5;
-  container.y = app.screen.height / 2;
-  app.stage.addChild(container);
-
-  const label = new Text({
-    text: 'Number Line Task',
-    style: { fill: 0xffffff },
-  });
-  label.position.set(20, 20);
-  label.width = app.screen.width - 40;
-  label.scale.y = label.scale.x;
-  app.stage.addChild(label);
-}
-
-function addSlider(app: typeof Application.prototype, type = "bounded", startNum, endNum, startPos, endPos) {
-
+function addSlider(app: typeof Application.prototype, type = "universal") {
   const stageWidth = app.screen.width;
   const stageHeight = app.screen.height;
   const sliderWidth = 320;
@@ -110,14 +83,19 @@ const info = <const>{
       type: ParameterType.INT,
       default: 300,
     },
+    title: {
+      type: ParameterType.STRING,
+      default: "Drag the handle to estimate a value.",
+    },
+    number_line_type: {
+      type: ParameterType.SELECT,
+      options: ["bounded", "unbounded", "universal"],
+      default: "universal",
+    },
   },
   data: {
-    data1: {
-      type: ParameterType.INT,
-    },
-    data2: {
-      type: ParameterType.STRING,
-    },
+    data1: { type: ParameterType.INT },
+    data2: { type: ParameterType.STRING },
   },
   citations: '__CITATIONS__',
 };
@@ -132,7 +110,7 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
   trial(display_element: HTMLElement, trial: TrialType<Info>) {
     (async () => {
       const app = new Application();
-      await app.init({ background: '#000000', resizeTo: window });
+      await app.init({ background: '#DDDDDD', resizeTo: window });
       display_element.appendChild(app.canvas);
 
       let startNum = 0
