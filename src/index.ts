@@ -61,8 +61,6 @@ const { Application, Graphics, Container, Text } = window.PIXI
 
 import { version } from "../package.json";
 
-
-
 function addSlider(app: typeof Application.prototype, line_type, label_min, label_max, start_tick, line_length, custom_ticks, stimulus) {
   const stageWidth = app.screen.width;
   const stageHeight = app.screen.height;
@@ -71,8 +69,8 @@ function addSlider(app: typeof Application.prototype, line_type, label_min, labe
   const sliderWidth = line_length;
 
   const slider = new Graphics().rect(0, 0, sliderWidth, 4).fill({ color: 0x272d37 });
-  slider.x = (stageWidth - sliderWidth) / 2;
-  slider.y = stageHeight * 0.75;
+  slider.x = start_tick[0];
+  slider.y = start_tick[1];
 
   const startTick = new Graphics().rect(0, 0, 4, 4 * 8).fill({ color: 0x272d37 });
   const endTick = new Graphics().rect(0, 0, 4, 4 * 8).fill({ color: 0x272d37 });
