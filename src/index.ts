@@ -10,7 +10,7 @@ const info = <const>{
     },
     response_max_length: {
       type: ParameterType.INT,
-      default: 400,
+      default: 500,
     },
     label_min: {
       type: ParameterType.STRING,
