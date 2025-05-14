@@ -10,8 +10,8 @@ authors:
 - family-names: "Sharma"  # Replace with last name
   given-names: "Khushi"   # Replace with first name
   orcid: "https://orcid.org/0009-0000-7492-8299"  # Replace with ORCID
-- family-names: "Eunkyung"  # Replace with last name
-  given-names: "Jo"   # Replace with first name
+- family-names: "Jo"  # Replace with last name
+  given-names: "Eunkyung"   # Replace with first name
   orcid: "https://orcid.org/0000-0002-5616-9206"  # Replace with ORCID
 - family-names: "Dadika"  # Replace with last name
   given-names: "Paige"   # Replace with first name
