@@ -10,7 +10,7 @@ const { Application, Graphics, Container, Text } = window.PIXI
 
 import { version } from "../package.json";
 
-function addSlider(app: typeof Application.prototype, type = "universal") {
+function addSlider(app: typeof Application.prototype, type = "universal", startNum, endNum, startPos, endPos) {
   const stageWidth = app.screen.width;
   const stageHeight = app.screen.height;
   const sliderWidth = 320;
@@ -114,10 +114,9 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
       display_element.appendChild(app.canvas);
 
       let startNum = 0
-      let endNum = 0
+      let endNum = 10
       let startPos = 0 
       let endPos = 0
-      render(app);
       addSlider(app, "universal", startNum, endNum, startPos, endPos); // choose "universal", "bounded", or "unbounded"
     })();
   }
