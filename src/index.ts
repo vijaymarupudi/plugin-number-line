@@ -10,7 +10,7 @@ const { Application, Graphics, Container, Text } = window.PIXI
 
 import { version } from "../package.json";
 
-function addSlider(app: typeof Application.prototype, type = "universal", label_min, label_max, start_tick, line_length, stimulus) {
+function addSlider(app: typeof Application.prototype, type = "universal", label_min, label_max, start_tick, line_length, custom_ticks, stimulus) {
   const stageWidth = app.screen.width;
   const stageHeight = app.screen.height;
   const sliderWidth = 320;
@@ -25,6 +25,25 @@ function addSlider(app: typeof Application.prototype, type = "universal", label_
   startTick.y = -4 * 4;
   endTick.x = sliderWidth - 2;
   endTick.y = -4 * 4;
+
+  for (let i = 0; i < custom_ticks.length; i++) {
+    const [xi, yi] = custom_ticks[i];
+    const xPos = xi * sliderWidth;
+  
+    const tick = new Graphics().rect(0, startTick.y, 2, 8 * 4).fill({ color: 0x000000 });
+    tick.x = xPos - 1;
+    slider.addChild(tick);
+  
+    const label = new Text({
+      text: yi,
+      style: { fontSize: 10, fill: 0x000000},
+    });
+    label.anchor.set(0.5, 0); // anchor top-center
+    label.x = xPos;
+    label.y = startTick.y + 8 * 4 + 4; // position just below the tick
+    slider.addChild(label);
+  }
+  
 
   const handle = new Graphics().rect(0, -4*4, 4, 4*8).fill({ color: 0xffffff });
   handle.y = 0;
@@ -69,7 +88,7 @@ function addSlider(app: typeof Application.prototype, type = "universal", label_
   });
   startLabel.anchor.set(0.5, 0); // center horizontally
   startLabel.x = 0;
-  startLabel.y =  startTick.height + 5 ;
+  startLabel.y =  startTick.height - 5 ;
   startTick.addChild(startLabel); // or app.stage.addChild(startLabel);
 
   const endLabel = new Text({
@@ -97,13 +116,6 @@ function addSlider(app: typeof Application.prototype, type = "universal", label_
   stimulus_text.x = 0;
   stimulus_text.y =  startLabel.height + 5 ;
   startLabel.addChild(stimulus_text); // or app.stage.addChild(startLabel);
-
-
-  
-
-
-  
-
 
   function onDragStart() {
     app.stage.eventMode = 'static';
@@ -174,12 +186,15 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
       await app.init({ background: '#DDDDDD', resizeTo: window });
       display_element.appendChild(app.canvas);
 
-      let label_min = "heee"
-      let label_max = "hooo"
+      let label_min = "1"
+      let label_max = "10"
       let startPos = 0 
       let endPos = 0
-      let stimulus = "hello"
-      addSlider(app, "universal", label_min, label_max, start_tick, line_length, stimulus); // choose "universal", "bounded", or "unbounded"
+      let stimulus = "7"
+      let custom_ticks = [[0.125, "12.5%"], [0.25, "25%"], [0.375, "37.5%"], [0.5, "50%"],  [0.625, "62.5%"], [0.75, "75%"], [0.875, "87.5%"], [0.9, "90%"]]
+      let start_tick = 100
+      let line_length = 500
+      addSlider(app, "universal", label_min, label_max, start_tick, line_length, custom_ticks, stimulus); // choose "universal", "bounded", or "unbounded"
     })();
   }
 }
