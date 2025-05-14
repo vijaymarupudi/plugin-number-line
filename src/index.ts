@@ -44,7 +44,7 @@ const info = <const>{
       type: ParameterType.INT,
       default: 250,
     },
-    title: {
+    preamble: {
       type: ParameterType.STRING,
       default: "Drag the handle to estimate a value.",
     },
@@ -216,7 +216,6 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
 
   trial(display_element: HTMLElement, trial: TrialType<Info>) {
     (async () => {
-
       const container = document.createElement("div");
       container.classList.add("jspsych-numberline-container");
       container.style.display = "flex";       
@@ -225,6 +224,15 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
       container.style.gap = "20px";             
       display_element.appendChild(container);
       
+      if (trial.preamble) {
+        const preamble = document.createElement("div");
+        preamble.innerHTML = trial.preamble;
+        preamble.style.fontSize = "16px";
+        preamble.style.marginBottom = "10px";
+        preamble.style.textAlign = "center";
+        container.appendChild(preamble);
+      }
+
       const app = new Application();
 
       let canvas_width = trial.canvas_width
