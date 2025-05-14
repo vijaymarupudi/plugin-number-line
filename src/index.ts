@@ -10,7 +10,7 @@ const { Application, Graphics, Container, Text } = window.PIXI
 
 import { version } from "../package.json";
 
-function addSlider(app: typeof Application.prototype, type = "universal", startNum, endNum, startPos, endPos) {
+function addSlider(app: typeof Application.prototype, type = "universal", label_min, label_max, startPos, endPos, stimulus) {
   const stageWidth = app.screen.width;
   const stageHeight = app.screen.height;
   const sliderWidth = 320;
@@ -29,23 +29,39 @@ function addSlider(app: typeof Application.prototype, type = "universal", startN
   const handle = new Graphics().circle(0, 0, 8).fill({ color: 0xffffff });
   handle.y = slider.height / 2;
 
+  
+
   if (type === "unbounded") {
     handle.x = sliderWidth/2  + handle.width;
   } else {
-    handle.x = sliderWidth / 2;
+    handle.x = 0;
   }
 
   handle.eventMode = 'static';
   handle.cursor = 'pointer';
   handle.on('pointerdown', onDragStart).on('pointerup', onDragEnd).on('pointerupoutside', onDragEnd);
+  const redLine = new Graphics();
+  redLine.clear()
+    .moveTo(0, 2)
+    .lineTo(handle.x, 2)
+    .stroke({ color: 0xff0000, width: 4 });
+
+
   
-  slider.addChild(startTick);
+  
   slider.addChild(endTick);
 
   app.stage.addChild(slider);
+
+  slider.addChild(redLine);
+  slider.addChild(startTick);
+
   slider.addChild(handle);
 
+  // slider.setChildIndex(redLine, 0);
   
+
+
   
 
 
@@ -68,11 +84,15 @@ function addSlider(app: typeof Application.prototype, type = "universal", startN
     } else if (type === "bounded") {
       handle.x = Math.max(0, Math.min(localX, sliderWidth));
     } else if (type === "unbounded") {
-      handle.x = Math.max(0, Math.max(localX, sliderWidth ));
+      handle.x = Math.max(0, Math.max(localX, sliderWidth));
     }
 
     const t = 2 * (handle.x / sliderWidth - 0.5);
     // do something with `t`, e.g., scale feedback object or record response
+    redLine.clear()
+    .moveTo(0, 2)
+    .lineTo(handle.x, 2)
+    .stroke({ color: 0xff0000, width: 4 });
   }
 }
 
@@ -114,11 +134,11 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
       await app.init({ background: '#DDDDDD', resizeTo: window });
       display_element.appendChild(app.canvas);
 
-      let startNum = 0
-      let endNum = 10
+      let label_min = "hee"
+      let label_max = 10
       let startPos = 0 
       let endPos = 0
-      addSlider(app, "bounded", startNum, endNum, startPos, endPos); // choose "universal", "bounded", or "unbounded"
+      addSlider(app, "universal", label_min, label_max, startPos, endPos, ""); // choose "universal", "bounded", or "unbounded"
     })();
   }
 }
