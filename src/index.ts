@@ -28,13 +28,13 @@ function addSlider(app: typeof Application.prototype, type = "universal", label_
   endTick.x = sliderWidth - 2;
   endTick.y = -4 * 4;
 
-  const handle = new Graphics().rect(0, -4 * 4, 4, 4 * 8).fill({ color: 0xffffff });
+  const handle = new Graphics().rect(0, -4 * 2, 4, 4 * 4).fill({ color: 0xffffff });
   handle.y = 0;
 
   if (type === "unbounded") {
-    handle.x = sliderWidth / 2 + handle.width;
+    handle.x = sliderWidth  - handle.width / 2;
   } else {
-    handle.x = 0;
+    handle.x =  - handle.width / 2;
   }
 
   const redLine = new Graphics();
@@ -103,9 +103,9 @@ function addSlider(app: typeof Application.prototype, type = "universal", label_
     if (type === "universal") {
       handle.x = Math.max(0, localX);
     } else if (type === "bounded") {
-      handle.x = Math.max(0, Math.min(localX, sliderWidth));
+      handle.x = Math.max(- handle.width / 2, Math.min(localX, sliderWidth - handle.width / 2));
     } else if (type === "unbounded") {
-      handle.x = Math.max(0, Math.max(localX, sliderWidth));
+      handle.x = Math.max(- handle.width / 2, Math.max(localX, sliderWidth - handle.width / 2));
     }
 
 
