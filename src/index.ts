@@ -4,29 +4,21 @@ const info = <const>{
   name: "plugin-number-line",
   version: version,
   parameters: {
-    canvas_width: {
-      type: ParameterType.STRING,
-      default: 600,
-    },
-    canvas_height: {
-      type: ParameterType.STRING,
-      default: 300,
-    },
     text_color: {
       type: ParameterType.STRING,
       default: '0x000000',
     },
     label_min: {
       type: ParameterType.STRING,
-      default: 1,
+      default: [],
     },
     label_max: {
       type: ParameterType.STRING,
-      default: 10,
+      default: [],
     },
     stimulus: {
       type: ParameterType.STRING,
-      default: 7,
+      default: [],
     },
     line_type: {
       type: ParameterType.STRING,
@@ -36,13 +28,21 @@ const info = <const>{
       type: ParameterType.OBJECT,
       default: [],
     },
+    canvas_width: {
+      type: ParameterType.STRING,
+      default: 600,
+    },
+    canvas_height: {
+      type: ParameterType.STRING,
+      default: 300,
+    },
     start_tick_coords: {
       type: ParameterType.OBJECT,
-      default: [50, 20],
+      default: [50, 150],
     },
     line_length: {
       type: ParameterType.INT,
-      default: 100,
+      default: 250,
     },
     title: {
       type: ParameterType.STRING,
