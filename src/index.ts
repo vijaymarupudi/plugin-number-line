@@ -18,19 +18,19 @@ function addSlider(app: typeof Application.prototype, type = "universal", startN
   const slider = new Graphics().rect(0, 0, sliderWidth, 4).fill({ color: 0x272d37 });
   slider.x = (stageWidth - sliderWidth) / 2;
   slider.y = stageHeight * 0.75;
+
   const startTick = new Graphics().rect(0, 0, 4, 4*8).fill({ color: 0x272d37 });
   const endTick = new Graphics().rect(0, 0, 4, 4*8).fill({ color: 0x272d37 });
-
-  startTick.x = slider.x;
-  startTick.y = slider.y - 4*4;
-  endTick.x = slider.x + sliderWidth;
-  endTick.y = slider.y - 4*4;
+  startTick.x = -2;
+  startTick.y = -4 * 4;
+  endTick.x = sliderWidth - 2;
+  endTick.y = -4 * 4;
 
   const handle = new Graphics().circle(0, 0, 8).fill({ color: 0xffffff });
   handle.y = slider.height / 2;
 
   if (type === "unbounded") {
-    handle.x = stageWidth - (stageWidth - sliderWidth) / 2 - sliderWidth / 2 + handle.width;
+    handle.x = sliderWidth/2  + handle.width;
   } else {
     handle.x = sliderWidth / 2;
   }
@@ -39,12 +39,13 @@ function addSlider(app: typeof Application.prototype, type = "universal", startN
   handle.cursor = 'pointer';
   handle.on('pointerdown', onDragStart).on('pointerup', onDragEnd).on('pointerupoutside', onDragEnd);
   
-  app.stage.addChild(startTick);
-  app.stage.addChild(endTick);
+  slider.addChild(startTick);
+  slider.addChild(endTick);
 
   app.stage.addChild(slider);
-  // app.stage.addChild(endTick);
   slider.addChild(handle);
+
+  
   
 
 
@@ -63,11 +64,11 @@ function addSlider(app: typeof Application.prototype, type = "universal", startN
     const localX = slider.toLocal(e.global).x;
 
     if (type === "universal") {
-      handle.x = Math.max(halfHandleWidth, localX);
+      handle.x = Math.max(0, localX);
     } else if (type === "bounded") {
-      handle.x = Math.max(halfHandleWidth, Math.min(localX, sliderWidth - halfHandleWidth));
+      handle.x = Math.max(0, Math.min(localX, sliderWidth));
     } else if (type === "unbounded") {
-      handle.x = Math.max(halfHandleWidth, Math.max(localX, sliderWidth - halfHandleWidth));
+      handle.x = Math.max(0, Math.max(localX, sliderWidth ));
     }
 
     const t = 2 * (handle.x / sliderWidth - 0.5);
@@ -117,7 +118,7 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
       let endNum = 10
       let startPos = 0 
       let endPos = 0
-      addSlider(app, "universal", startNum, endNum, startPos, endPos); // choose "universal", "bounded", or "unbounded"
+      addSlider(app, "bounded", startNum, endNum, startPos, endPos); // choose "universal", "bounded", or "unbounded"
     })();
   }
 }
