@@ -10,7 +10,7 @@ const { Application, Graphics, Container, Text } = window.PIXI
 
 import { version } from "../package.json";
 
-function addSlider(app: typeof Application.prototype, type = "universal", label_min, label_max, startPos, endPos, stimulus) {
+function addSlider(app: typeof Application.prototype, type = "universal", label_min, label_max, start_tick, line_length, stimulus) {
   const stageWidth = app.screen.width;
   const stageHeight = app.screen.height;
   const sliderWidth = 320;
@@ -82,7 +82,7 @@ function addSlider(app: typeof Application.prototype, type = "universal", label_
   });
   endLabel.anchor.set(0.5, 0); // center horizontally
   endLabel.x = 0;
-  endLabel.y =  endTick.height + 5 ;
+  endLabel.y =  endTick.height + 5;
   endTick.addChild(endLabel); // or app.stage.addChild(startLabel);
 
   const stimulus_text = new Text({
@@ -179,7 +179,7 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
       let startPos = 0 
       let endPos = 0
       let stimulus = "hello"
-      addSlider(app, "universal", label_min, label_max, startPos, endPos, stimulus); // choose "universal", "bounded", or "unbounded"
+      addSlider(app, "universal", label_min, label_max, start_tick, line_length, stimulus); // choose "universal", "bounded", or "unbounded"
     })();
   }
 }
