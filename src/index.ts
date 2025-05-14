@@ -36,7 +36,8 @@ function render(app) {
   app.stage.addChild(label);
 }
 
-function addSlider(app: typeof Application.prototype, type = "universal") {
+function addSlider(app: typeof Application.prototype, type = "bounded", startNum, endNum, startPos, endPos) {
+
   const stageWidth = app.screen.width;
   const stageHeight = app.screen.height;
   const sliderWidth = 320;
@@ -44,6 +45,13 @@ function addSlider(app: typeof Application.prototype, type = "universal") {
   const slider = new Graphics().rect(0, 0, sliderWidth, 4).fill({ color: 0x272d37 });
   slider.x = (stageWidth - sliderWidth) / 2;
   slider.y = stageHeight * 0.75;
+  const startTick = new Graphics().rect(0, 0, 4, 4*8).fill({ color: 0x272d37 });
+  const endTick = new Graphics().rect(0, 0, 4, 4*8).fill({ color: 0x272d37 });
+
+  startTick.x = slider.x;
+  startTick.y = slider.y - 4*4;
+  endTick.x = slider.x + sliderWidth;
+  endTick.y = slider.y - 4*4;
 
   const handle = new Graphics().circle(0, 0, 8).fill({ color: 0xffffff });
   handle.y = slider.height / 2;
@@ -57,9 +65,15 @@ function addSlider(app: typeof Application.prototype, type = "universal") {
   handle.eventMode = 'static';
   handle.cursor = 'pointer';
   handle.on('pointerdown', onDragStart).on('pointerup', onDragEnd).on('pointerupoutside', onDragEnd);
+  
+  app.stage.addChild(startTick);
+  app.stage.addChild(endTick);
 
   app.stage.addChild(slider);
+  // app.stage.addChild(endTick);
   slider.addChild(handle);
+  
+
 
   function onDragStart() {
     app.stage.eventMode = 'static';
@@ -121,8 +135,12 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
       await app.init({ background: '#000000', resizeTo: window });
       display_element.appendChild(app.canvas);
 
+      let startNum = 0
+      let endNum = 0
+      let startPos = 0 
+      let endPos = 0
       render(app);
-      addSlider(app, "universal"); // choose "universal", "bounded", or "unbounded"
+      addSlider(app, "universal", startNum, endNum, startPos, endPos); // choose "universal", "bounded", or "unbounded"
     })();
   }
 }
