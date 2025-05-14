@@ -63,7 +63,7 @@ import { version } from "../package.json";
 
 
 
-function addSlider(app: typeof Application.prototype, type = "universal", label_min, label_max, start_tick, line_length, custom_ticks, stimulus) {
+function addSlider(app: typeof Application.prototype, line_type, label_min, label_max, start_tick, line_length, custom_ticks, stimulus) {
   const stageWidth = app.screen.width;
   const stageHeight = app.screen.height;
   app.stage.hitArea = app.screen;
@@ -105,7 +105,7 @@ function addSlider(app: typeof Application.prototype, type = "universal", label_
 
   handle.y = 0;
 
-  if (type == "unbounded") {
+  if (line_type == "unbounded") {
     handle.x = sliderWidth  - handle.width / 2;
   } else {
     handle.x =  - handle.width / 2;
@@ -174,11 +174,11 @@ function addSlider(app: typeof Application.prototype, type = "universal", label_
     if (!dragging) return;
 
     const localX = slider.toLocal(e.global).x;
-    if (type === "universal") {
+    if (line_type === "universal") {
       handle.x = Math.max(- handle.width / 2, localX);
-    } else if (type === "bounded") {
+    } else if (line_type === "bounded") {
       handle.x = Math.max(- handle.width / 2, Math.min(localX, sliderWidth - handle.width / 2));
-    } else if (type === "unbounded") {
+    } else if (line_type === "unbounded") {
       handle.x = Math.max(- handle.width / 2, Math.max(localX, sliderWidth - handle.width / 2));
     }
 
