@@ -26,8 +26,8 @@ function addSlider(app: typeof Application.prototype, type = "universal", label_
   endTick.x = sliderWidth - 2;
   endTick.y = -4 * 4;
 
-  const handle = new Graphics().rect(0, 0, 4, 4*8).fill({ color: 0xffffff });
-  handle.y = slider.height / 2;
+  const handle = new Graphics().rect(0, -4*4, 4, 4*8).fill({ color: 0xffffff });
+  handle.y = 0;
 
   
 
