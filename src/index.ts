@@ -59,7 +59,7 @@ import { version } from "../package.json";
 
 
 
-function addSlider(app: typeof Application.prototype, type = "universal", label_min, label_max, start_tick, line_length, custom_ticks, stimulus) {
+function addSlider(app: typeof Application.prototype, type = "universal", label_min, label_max, start_tick_coords, line_length, custom_ticks, stimulus) {
   const stageWidth = app.screen.width;
   const stageHeight = app.screen.height;
   app.stage.hitArea = app.screen;
@@ -69,6 +69,10 @@ function addSlider(app: typeof Application.prototype, type = "universal", label_
   const slider = new Graphics().rect(0, 0, sliderWidth, 4).fill({ color: 0x272d37 });
   slider.x = (stageWidth - sliderWidth) / 2;
   slider.y = stageHeight * 0.75;
+
+  // start_tick_coords[0]
+  slider.x = start_tick_coords[0];
+  slider.y = start_tick_coords[1];
 
   const startTick = new Graphics().rect(0, 0, 4, 4 * 8).fill({ color: 0x272d37 });
   const endTick = new Graphics().rect(0, 0, 4, 4 * 8).fill({ color: 0x272d37 });
@@ -196,8 +200,8 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
     (async () => {
       const app = new Application();
 
-      let canvas_width = 600
-      let canvas_height = 300
+      let canvas_width = 500
+      let canvas_height = 200
       await app.init({
         background: '#DDDDDD',
         width: canvas_width,     // desired canvas width
