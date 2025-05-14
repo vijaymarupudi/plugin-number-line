@@ -1,5 +1,52 @@
 import { JsPsych, JsPsychPlugin, ParameterType, TrialType } from "jspsych";
 
+const info = <const>{
+  name: "plugin-number-line",
+  version: version,
+  parameters: {
+    label_min: {
+      type: ParameterType.STRING,
+      default: 1,
+    },
+    label_max: {
+      type: ParameterType.STRING,
+      default: 10,
+    },
+    stimulus: {
+      type: ParameterType.STRING,
+      default: 7,
+    },
+    custom_ticks: {
+      type: ParameterType.OBJECT,
+      default: [],
+    },
+    start_tick_coords: {
+      type: ParameterType.OBJECT,
+      default: [50, 20],
+    },
+    line_length: {
+      type: ParameterType.INT,
+      default: 100,
+    },
+    title: {
+      type: ParameterType.STRING,
+      default: "Drag the handle to estimate a value.",
+    },
+    number_line_type: {
+      type: ParameterType.SELECT,
+      options: ["bounded", "unbounded", "universal"],
+      default: "universal",
+    },
+  },
+  data: {
+    data1: { type: ParameterType.INT },
+    data2: { type: ParameterType.STRING },
+  },
+  citations: '__CITATIONS__',
+};
+
+type Info = typeof info;
+
 declare global {
   interface Window {
     PIXI: any
@@ -15,7 +62,7 @@ function addSlider(app: typeof Application.prototype, type = "universal", label_
   const stageHeight = app.screen.height;
   app.stage.hitArea = app.screen;
 
-  const sliderWidth = 320;
+  const sliderWidth = line_length;
 
   const slider = new Graphics().rect(0, 0, sliderWidth, 4).fill({ color: 0x272d37 });
   slider.x = (stageWidth - sliderWidth) / 2;
@@ -136,33 +183,6 @@ function addSlider(app: typeof Application.prototype, type = "universal", label_
 
 }
 
-const info = <const>{
-  name: "plugin-number-line",
-  version: version,
-  parameters: {
-    reaction_time: {
-      type: ParameterType.INT,
-      default: 300,
-    },
-    title: {
-      type: ParameterType.STRING,
-      default: "Drag the handle to estimate a value.",
-    },
-    number_line_type: {
-      type: ParameterType.SELECT,
-      options: ["bounded", "unbounded", "universal"],
-      default: "universal",
-    },
-  },
-  data: {
-    data1: { type: ParameterType.INT },
-    data2: { type: ParameterType.STRING },
-  },
-  citations: '__CITATIONS__',
-};
-
-type Info = typeof info;
-
 class NumberLinePlugin implements JsPsychPlugin<Info> {
   static info = info;
 
@@ -174,15 +194,14 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
       await app.init({ background: '#DDDDDD', resizeTo: window });
       display_element.appendChild(app.canvas);
 
-      let label_min = "1"
-      let label_max = "10"
-      let startPos = 0 
-      let endPos = 0
-      let stimulus = "7"
-      let custom_ticks = [[0.125, "12.5%"], [0.25, "25%"], [0.375, "37.5%"], [0.5, "50%"],  [0.625, "62.5%"], [0.75, "75%"], [0.875, "87.5%"]]
-      let start_tick = 100
-      let line_length = 500
-      addSlider(app, "unbounded", label_min, label_max, start_tick, line_length, custom_ticks, stimulus); // choose "universal", "bounded", or "unbounded"
+      let label_min = trial.label_min;
+      let label_max = trial.label_max;
+      let stimulus = trial.stimulus;
+      let custom_ticks = trial.custom_ticks;
+      let start_tick = trial.start_tick_coords;
+      let line_length = trial.line_length;
+      
+      addSlider(app, "unbounded", label_min, label_max, start_tick, line_length, custom_ticks, stimulus);
     })();
   }
 }
