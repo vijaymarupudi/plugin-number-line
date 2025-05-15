@@ -48,7 +48,7 @@ const info = <const>{
       type: ParameterType.INT,
       default: 250,
     },
-    title: {
+    preamble: {
       type: ParameterType.STRING,
       default: "Drag the handle to estimate a value.",
     },
@@ -57,10 +57,17 @@ const info = <const>{
       options: ["bounded", "unbounded", "universal"],
       default: "universal",
     },
+    trial_end_button: {
+      type: ParameterType.HTML_STRING,
+      default: "Submit",
+    },
+    show_finish_button: {
+      type: ParameterType.BOOL,
+      default: true,
+    }
   },
   data: {
-    data1: { type: ParameterType.INT },
-    data2: { type: ParameterType.STRING },
+    final_handle_position: { type: ParameterType.INT },
   },
   citations: '__CITATIONS__',
 };
@@ -211,17 +218,31 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
   static info = info;
 
   constructor(private jsPsych: JsPsych) {}
-
-  trial(display_element: HTMLElement, trial: TrialType<Info>) {
-    (async () => {
-      const app = new Application();
-
-      await app.init({
-        background: '#DDDDDD',
-        width: trial.canvas_width,
-        height: trial.canvas_height,
-      });
-      display_element.appendChild(app.canvas);
+    trial(display_element: HTMLElement, trial: TrialType<Info>) {
+      (async () => {
+        const container = document.createElement("div");
+        container.classList.add("jspsych-numberline-container");
+        container.style.display = "flex";       
+        container.style.flexDirection = "column"; 
+        container.style.alignItems = "center";    
+        container.style.gap = "20px";             
+        display_element.appendChild(container);
+        
+        if (trial.preamble) {
+          const preamble = document.createElement("div");
+          preamble.innerHTML = trial.preamble;
+          preamble.style.fontSize = "16px";
+          preamble.style.marginBottom = "10px";
+          preamble.style.textAlign = "center";
+          container.appendChild(preamble);
+        }
+        const app = new Application();
+        await app.init({
+          background: '#DDDDDD',
+          width: trial.canvas_width,
+          height: trial.canvas_height,
+        });
+      container.appendChild(app.canvas);
 
       const { handle, sliderWidth } = addSlider(
         app,
@@ -236,16 +257,24 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
         trial.response_max_length
       );
 
-      // save the data
-      handle.on('pointerup', () => {
-        const handleCenterX = handle.x + handle.width / 2;
-        const responseRatio = handleCenterX / sliderWidth; // position of handle : 0-1
+      if (trial.show_finish_button) {
+        const finishButton = document.createElement("button");
+        finishButton.innerHTML = trial.trial_end_button || "Finish";
+        finishButton.style.marginTop = "20px";
+        finishButton.style.padding = "10px";
+        finishButton.style.fontSize = "16px";
+        finishButton.style.cursor = "pointer";
+        container.appendChild(finishButton);
 
-        this.jsPsych.finishTrial({
-          data1: Math.round(responseRatio * 1000),  // position of handle : 0-1000
-          data2: "response_recorded",
+        finishButton.addEventListener("click", () => {
+          const handleCenterX = handle.x + handle.width / 2;
+          const responseRatio = handleCenterX / sliderWidth;
+
+          this.jsPsych.finishTrial({
+            final_handle_position: Math.round(responseRatio * 1000), // handle position : 0 -1000
+         });
         });
-      });
+      }
     })();
   }
 }
