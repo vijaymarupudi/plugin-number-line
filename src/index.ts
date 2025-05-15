@@ -48,7 +48,7 @@ const info = <const>{
       type: ParameterType.INT,
       default: 250,
     },
-    title: {
+    preamble: {
       type: ParameterType.STRING,
       default: "Drag the handle to estimate a value.",
     },
@@ -57,6 +57,15 @@ const info = <const>{
       options: ["bounded", "unbounded", "universal"],
       default: "universal",
     },
+    trial_end_button: {
+      type: ParameterType.HTML_STRING,
+      default: "Submit",
+    },
+    require_interaction: {
+      type: ParameterType.BOOL,
+      default: false,
+    },
+
   },
   data: {
     data1: { type: ParameterType.INT },
@@ -77,7 +86,9 @@ const { Application, Graphics, Container, Text } = window.PIXI
 
 import { version } from "../package.json";
 
-function addSlider(app: typeof Application.prototype, line_type, label_min, label_max, start_tick, line_length, custom_ticks, stimulus, text_color, response_max_length ) {
+function addSlider(app: typeof Application.prototype, line_type, label_min, label_max, start_tick, line_length, custom_ticks, stimulus, text_color, response_max_length onFirstMove) {
+  
+
   const stageWidth = app.screen.width;
   const stageHeight = app.screen.height;
   app.stage.hitArea = app.screen;
@@ -168,6 +179,7 @@ function addSlider(app: typeof Application.prototype, line_type, label_min, labe
 
   handle.eventMode = 'static';
   handle.cursor = 'pointer';
+  let hasMoved = false;
 
   handle.on('pointerdown', () => {
     dragging = true;
@@ -200,6 +212,11 @@ function addSlider(app: typeof Application.prototype, line_type, label_min, labe
       .moveTo(0, 2)
       .lineTo(handle.x, 2)
       .stroke({ color: 0xff0000, width: 4 });
+
+    if (!hasMoved) {
+      hasMoved = true;
+      onFirstMove?.();  
+    }
 
   });
 
@@ -251,13 +268,25 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
       let line_length = trial.line_length;
       let text_color = trial.text_color;
       let response_max_length = trial.response_max_length;
-      addSlider(app, line_type, label_min, label_max, start_tick, line_length, custom_ticks, stimulus, text_color, response_max_length);
-      if (trial.show_finish_button) {
-        const button = document.createElement("button");
+
+
+      let button: HTMLButtonElement | null = null;
+      let require_interaction = trial.require_interaction;
+      addSlider(app, line_type, label_min, label_max, start_tick, line_length, custom_ticks, stimulus, text_color, response_max_length, () => {
+        if (button) button.style.display = "block";
+      });      
+      
+   
+        button = document.createElement("button");
+
         button.innerHTML = trial.trial_end_button;
         button.classList.add("jspsych-numberline-finish-button");
 
         container.appendChild(button);
+        if (require_interaction) {
+          button.style.display = "none";
+
+        }
 
         const start_time = performance.now();
 
@@ -271,8 +300,10 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
             rt: rt,
           });
         });
-      }
+      
     })();
   }
 };
+
 export default NumberLinePlugin;
+
