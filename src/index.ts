@@ -257,6 +257,31 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
         trial.response_max_length
       );
 
+      //Data saving: click-release
+      let first_slide_start_rt = null;
+      let first_slide_end_rt = null;
+      let last_slide_start_rt = null;
+      let last_slide_end_rt = null;
+      let drag_count = 0;
+
+      handle.on('pointerdown', () => {
+        const now = performance.now();
+        drag_count += 1;
+        if (first_slide_start_rt === null) {
+          first_slide_start_rt = now;
+        }
+        last_slide_start_rt = now;
+      });
+
+      handle.on('pointerup', () => {
+        const now = performance.now();
+        if (first_slide_end_rt === null) {
+          first_slide_end_rt = now;
+        }
+        last_slide_end_rt = now;
+      });
+
+      
       if (trial.show_finish_button) {
         const finishButton = document.createElement("button");
         finishButton.innerHTML = trial.trial_end_button || "Finish";
@@ -267,11 +292,17 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
         container.appendChild(finishButton);
 
         finishButton.addEventListener("click", () => {
-          const handleCenterX = handle.x + handle.width / 2;
-          const responseRatio = handleCenterX / sliderWidth;
+          const end_rt = performance.now();   // Reaction time when the finish button is clicked (ms)
+          const handleCenterX = handle.x + handle.width / 2; // Handle center position in pixels
 
-          this.jsPsych.finishTrial({
-            final_handle_position: Math.round(responseRatio * 1000), // handle position : 0 -1000
+        this.jsPsych.finishTrial({
+          final_handle_position: handleCenterX,  // Final handle position in pixels (absolute x-coordinate on the slider)
+          total_rt: end_rt,   // Reaction time when the "Finish" button is clicked (milliseconds)
+          first_slide_start_rt: first_slide_start_rt,   // Timestamp of the first pointerdown event on the handle (milliseconds)
+          first_slide_end_rt: first_slide_end_rt,   // Timestamp of the first pointerup event on the handle (milliseconds)
+          last_slide_start_rt: last_slide_start_rt,   // Timestamp of the last pointerdown event on the handle (milliseconds)
+          last_slide_end_rt: last_slide_end_rt,   // Timestamp of the last pointerup event on the handle (milliseconds)
+          drag_count: drag_count,   // Total number of complete drag actions (pointerdown + pointerup pairs)
          });
         });
       }
