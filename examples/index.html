@@ -14,7 +14,20 @@
 
 <body></body>
 <script>
-  const jsPsych = initJsPsych();
+  const jsPsych = initJsPsych({on_finish: function () {
+      const csv = jsPsych.data.get().csv();
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'jspsych_data.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  });
 
   const trial = {
     type: jsPsychPluginNumberLine,
@@ -22,16 +35,18 @@
     label_max: "1000",
     line_type: "universal",
     start_tick_coords: [50, 150],
+    label_min: 0,
+    label_max: 1, 
     canvas_width: 600,
     canvas_height: 300,
     line_length: 250,
     response_max_length: 300,
-    preamble: `preamble text here.<br> default: Estimate the location of the number`,
+    preamble: `preamble text here.<br> default: Estimate the location of the number 0.8`,
     text_color: '0x0044BB',
+    require_interaction: false, 
     stimage: "bunny.png",
     image_min: "bunny.png",
     image_max: "bunny.png",
-    require_interaction: true, 
     trial_end_button: "Submit",        
 
   };

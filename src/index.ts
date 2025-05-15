@@ -67,8 +67,7 @@ const info = <const>{
     },
   },
   data: {
-    data1: { type: ParameterType.INT },
-    data2: { type: ParameterType.STRING },
+    final_handle_position: { type: ParameterType.INT },
   },
   citations: '__CITATIONS__',
 };
@@ -126,7 +125,6 @@ function addSlider(app: typeof Application.prototype, line_type, label_min, labe
   const handle = new Graphics().rect(0, -4 * 2, 4, 4 * 4).fill({ color: 0xffffff });
 
   handle.y = 0;
-
   if (line_type == "unbounded") {
     handle.x = sliderWidth  - handle.width / 2;
   } else {
@@ -250,6 +248,8 @@ function addSlider(app: typeof Application.prototype, line_type, label_min, labe
 
   });
 
+  return { handle, sliderWidth};      //Data saving
+
 }
 
 
@@ -257,55 +257,55 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
   static info = info;
 
   constructor(private jsPsych: JsPsych) {}
-
-  trial(display_element: HTMLElement, trial: TrialType<Info>) {
-    (async () => {
-      const container = document.createElement("div");
-      container.classList.add("jspsych-numberline-container");
-      container.style.display = "flex";       
-      container.style.flexDirection = "column"; 
-      container.style.alignItems = "center";    
-      container.style.gap = "20px";             
-      display_element.appendChild(container);
-      
-      if (trial.preamble) {
-        const preamble = document.createElement("div");
-        preamble.innerHTML = trial.preamble;
-        preamble.style.fontSize = "16px";
-        preamble.style.marginBottom = "10px";
-        preamble.style.textAlign = "center";
-        container.appendChild(preamble);
-      }
-
-      const app = new Application();
-
-      let canvas_width = trial.canvas_width
-      let canvas_height = trial.canvas_height
-      await app.init({
-        background: '#DDDDDD',
-        width: canvas_width,     // desired canvas width
-        height:canvas_height,    // desired canvas height
-      });
-      
+    trial(display_element: HTMLElement, trial: TrialType<Info>) {
+      (async () => {
+        const container = document.createElement("div");
+        container.classList.add("jspsych-numberline-container");
+        container.style.display = "flex";       
+        container.style.flexDirection = "column"; 
+        container.style.alignItems = "center";    
+        container.style.gap = "20px";             
+        display_element.appendChild(container);
+        
+        if (trial.preamble) {
+          const preamble = document.createElement("div");
+          preamble.innerHTML = trial.preamble;
+          preamble.style.fontSize = "16px";
+          preamble.style.marginBottom = "10px";
+          preamble.style.textAlign = "center";
+          container.appendChild(preamble);
+        }
+        const app = new Application();
+        await app.init({
+          background: '#DDDDDD',
+          width: trial.canvas_width,
+          height: trial.canvas_height,
+        });
       container.appendChild(app.canvas);
 
-      let label_min = trial.label_min;
-      let label_max = trial.label_max;
-      let line_type = trial.line_type;
-      let stimulus = trial.stimulus;
-      let custom_ticks = trial.custom_ticks;
-      let start_tick = trial.start_tick_coords;
-      let line_length = trial.line_length;
-      let text_color = trial.text_color;
-      let response_max_length = trial.response_max_length;
-      let image_max = trial.image_max;
-      let image_min = trial.image_min;
-      let stimage = trial.stimage;
-      let button: HTMLButtonElement | null = null;
+
+
       let require_interaction = trial.require_interaction;
-      addSlider(app, line_type, label_min, label_max, start_tick, line_length, custom_ticks, stimulus, text_color, response_max_length, image_max, image_min, stimage, () => {
+      let button: HTMLButtonElement | null = null;
+        
+      const { handle, sliderWidth } = addSlider(
+        app,
+        trial.line_type,
+        trial.label_min,
+        trial.label_max,
+        trial.start_tick_coords,
+        trial.line_length,
+        trial.custom_ticks,
+        trial.stimulus,
+        trial.text_color,
+        trial.response_max_length,
+        trial.image_max, 
+        trial.image_min, 
+        trial.stimage,
+        () => {
+
         if (button) button.style.display = "block";
-      });      
+      });
       
    
         button = document.createElement("button");
@@ -314,27 +314,62 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
         button.classList.add("jspsych-numberline-finish-button");
 
         container.appendChild(button);
-        if (require_interaction) {
+        if (trial.require_interaction) {
           button.style.display = "none";
 
         }
 
-        const start_time = performance.now();
+      //Data saving: click-release
+      let first_slide_start_rt = null;
+      let first_slide_end_rt = null;
+      let last_slide_start_rt = null;
+      let last_slide_end_rt = null;
+      let drag_count = 0;
+
+      handle.on('pointerdown', () => {
+        const now = performance.now();
+        drag_count += 1;
+        if (first_slide_start_rt === null) {
+          first_slide_start_rt = now;
+        }
+        last_slide_start_rt = now;
+      });
+
+      handle.on('pointerup', () => {
+        const now = performance.now();
+        if (first_slide_end_rt === null) {
+          first_slide_end_rt = now;
+        }
+        last_slide_end_rt = now;
+      });
+
+      
+        button.style.marginTop = "20px";
+        button.style.padding = "10px";
+        button.style.fontSize = "16px";
+        button.style.cursor = "pointer";
+        container.appendChild(button);
 
         button.addEventListener("click", () => {
-          const end_time = performance.now();
-          const rt = Math.round(end_time - start_time);
+          const end_rt = performance.now();   // Reaction time when the finish button is clicked (ms)
+          const handleCenterX = handle.x + handle.width / 2; // Handle center position in pixels
 
-          this.jsPsych.finishTrial({
-            data1: 0,
-            data2: "response",
-            rt: rt,
-          });
+        this.jsPsych.finishTrial({
+          final_handle_position: handleCenterX,  // Final handle position in pixels (absolute x-coordinate on the slider)
+          total_rt: end_rt,   // Reaction time when the "Finish" button is clicked (milliseconds)
+          first_slide_start_rt: first_slide_start_rt,   // Timestamp of the first pointerdown event on the handle (milliseconds)
+          first_slide_end_rt: first_slide_end_rt,   // Timestamp of the first pointerup event on the handle (milliseconds)
+          last_slide_start_rt: last_slide_start_rt,   // Timestamp of the last pointerdown event on the handle (milliseconds)
+          last_slide_end_rt: last_slide_end_rt,   // Timestamp of the last pointerup event on the handle (milliseconds)
+          drag_count: drag_count,   // Total number of complete drag actions (pointerdown + pointerup pairs)
+         });
         });
+
+      
       
     })();
   }
-};
+}
+
 
 export default NumberLinePlugin;
-
