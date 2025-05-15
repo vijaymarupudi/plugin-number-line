@@ -24,8 +24,21 @@ const info = <const>{
       type: ParameterType.STRING,
       default: [],
     },
+    image_min: {
+      type: ParameterType.IMAGE,
+      default: null,
+    },
+    image_max: {
+      type: ParameterType.IMAGE,
+      default: null,
+    },
+    stimage: {
+      type: ParameterType.IMAGE,
+      default: null,
+    },
     line_type: {
-      type: ParameterType.STRING,
+      type: ParameterType.SELECT,
+      options: ["bounded", "unbounded", "universal"],
       default: "universal",
     },
     custom_ticks: {
@@ -52,11 +65,6 @@ const info = <const>{
       type: ParameterType.STRING,
       default: "Drag the handle to estimate a value.",
     },
-    number_line_type: {
-      type: ParameterType.SELECT,
-      options: ["bounded", "unbounded", "universal"],
-      default: "universal",
-    },
   },
   data: {
     data1: { type: ParameterType.INT },
@@ -73,11 +81,11 @@ declare global {
   }
 }
 
-const { Application, Graphics, Container, Text } = window.PIXI
+const { Application, Graphics, Container, Text, Assets, Sprite } = window.PIXI
 
 import { version } from "../package.json";
 
-function addSlider(app: typeof Application.prototype, line_type, label_min, label_max, start_tick, line_length, custom_ticks, stimulus, text_color, response_max_length ) {
+function addSlider(app: typeof Application.prototype, line_type, label_min, label_max, start_tick, line_length, custom_ticks, stimulus, text_color, response_max_length, stimage, image_max, image_min) {
   const stageWidth = app.screen.width;
   const stageHeight = app.screen.height;
   app.stage.hitArea = app.screen;
@@ -135,34 +143,67 @@ function addSlider(app: typeof Application.prototype, line_type, label_min, labe
   slider.addChild(handle);
   app.stage.addChild(slider);
 
-  // Add labels
-  const startLabel = new Text({
-    text: label_min,
-    style: { fill: text_color, fontSize: 14, fontFamily: 'Arial' },
-  });
-  startLabel.anchor.set(0.5, 0);
-  startLabel.x = 0;
-  startLabel.y = startTick.height + 5;
-  startTick.addChild(startLabel);
 
-  const endLabel = new Text({
-    text: label_max,
-    style: { fill: text_color, fontSize: 14, fontFamily: 'Arial' },
-  });
-  endLabel.anchor.set(0.5, 0);
-  endLabel.x = 0;
-  endLabel.y = endTick.height + 5;
-  endTick.addChild(endLabel);
+  // Image labels
 
-  const stimulus_text = new Text({
-    text: stimulus,
-    style: { fill: text_color, fontSize: 14, fontFamily: 'Arial' },
-  });
-  stimulus_text.anchor.set(0.5, 0);
-  stimulus_text.x = 0;
-  stimulus_text.y = startLabel.height + 5;
-  startLabel.addChild(stimulus_text);
-
+  if (stimage != null) {
+    const startimage = image_min;
+    const endimage = image_max;
+    const stimulusimage = stimage;
+  
+    Promise.all([
+      Assets.load(startimage),
+      Assets.load(endimage),
+      Assets.load(stimulusimage)
+    ]).then(([startTex, endTex, stimTex]) => {
+      const startSprite = new Sprite(startTex);
+      startSprite.anchor.set(0.5, 0);
+      startSprite.x = 0;
+      startSprite.y = startTick.height + 5;
+      startTick.addChild(startSprite);
+  
+      const endSprite = new Sprite(endTex);
+      endSprite.anchor.set(0.5, 0);
+      endSprite.x = 0;
+      endSprite.y = endTick.height + 5;
+      endTick.addChild(endSprite);
+  
+      const stimSprite = new Sprite(stimTex);
+      stimSprite.anchor.set(0.5, 0);
+      stimSprite.x = 0;
+      stimSprite.y = startSprite.height + 10;
+      startSprite.addChild(stimSprite);
+    });
+  }
+  else {
+    const startLabel = new Text({
+      text: label_min,
+      style: { fill: text_color, fontSize: 14, fontFamily: 'Arial' },
+    });
+    startLabel.anchor.set(0.5, 0);
+    startLabel.x = 0;
+    startLabel.y = startTick.height + 5;
+    startTick.addChild(startLabel);
+  
+    const endLabel = new Text({
+      text: label_max,
+      style: { fill: text_color, fontSize: 14, fontFamily: 'Arial' },
+    });
+    endLabel.anchor.set(0.5, 0);
+    endLabel.x = 0;
+    endLabel.y = endTick.height + 5;
+    endTick.addChild(endLabel);
+  
+    const stimulus_text = new Text({
+      text: stimulus,
+      style: { fill: text_color, fontSize: 14, fontFamily: 'Arial' },
+    });
+    stimulus_text.anchor.set(0.5, 0);
+    stimulus_text.x = 0;
+    stimulus_text.y = startLabel.height + 5;
+    startLabel.addChild(stimulus_text);
+  }
+  
   // === Drag logic ===
   let dragging = false;
 
@@ -251,7 +292,10 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
       let line_length = trial.line_length;
       let text_color = trial.text_color;
       let response_max_length = trial.response_max_length;
-      addSlider(app, line_type, label_min, label_max, start_tick, line_length, custom_ticks, stimulus, text_color, response_max_length);
+      let image_max = trial.image_max;
+      let image_min = trial.image_min;
+      let stimage = trial.stimage;
+      addSlider(app, line_type, label_min, label_max, start_tick, line_length, custom_ticks, stimulus, text_color, response_max_length, image_max, image_min, stimage);
       if (trial.show_finish_button) {
         const button = document.createElement("button");
         button.innerHTML = trial.trial_end_button;
