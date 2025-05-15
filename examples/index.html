@@ -25,12 +25,15 @@
     canvas_width: 600,
     canvas_height: 300,
     line_length: 250,
-    preamble: "Estimate the location of the number",
+    response_max_length: 300,
+    preamble: `preamble text here.<br> default: Estimate the location of the number`,
     text_color: '0x0044BB',
-    require_interaction: true,
     stimage: "bunny.png",
     image_min: "bunny.png",
     image_max: "bunny.png"
+    require_interaction: true, 
+    trial_end_button: "Submit",        
+
   };
 
   jsPsych.run([trial])
