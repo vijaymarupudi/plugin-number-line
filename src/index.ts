@@ -77,8 +77,6 @@ const { Application, Graphics, Container, Text } = window.PIXI
 
 import { version } from "../package.json";
 
-
-
 function addSlider(app: typeof Application.prototype, line_type, label_min, label_max, start_tick, line_length, custom_ticks, stimulus, text_color, response_max_length ) {
   const stageWidth = app.screen.width;
   const stageHeight = app.screen.height;
@@ -207,6 +205,7 @@ function addSlider(app: typeof Application.prototype, line_type, label_min, labe
 
 }
 
+
 class NumberLinePlugin implements JsPsychPlugin<Info> {
   static info = info;
 
@@ -214,6 +213,23 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
 
   trial(display_element: HTMLElement, trial: TrialType<Info>) {
     (async () => {
+      const container = document.createElement("div");
+      container.classList.add("jspsych-numberline-container");
+      container.style.display = "flex";       
+      container.style.flexDirection = "column"; 
+      container.style.alignItems = "center";    
+      container.style.gap = "20px";             
+      display_element.appendChild(container);
+      
+      if (trial.preamble) {
+        const preamble = document.createElement("div");
+        preamble.innerHTML = trial.preamble;
+        preamble.style.fontSize = "16px";
+        preamble.style.marginBottom = "10px";
+        preamble.style.textAlign = "center";
+        container.appendChild(preamble);
+      }
+
       const app = new Application();
 
       let canvas_width = trial.canvas_width
@@ -223,7 +239,8 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
         width: canvas_width,     // desired canvas width
         height:canvas_height,    // desired canvas height
       });
-      display_element.appendChild(app.canvas);
+      
+      container.appendChild(app.canvas);
 
       let label_min = trial.label_min;
       let label_max = trial.label_max;
@@ -235,8 +252,27 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
       let text_color = trial.text_color;
       let response_max_length = trial.response_max_length;
       addSlider(app, line_type, label_min, label_max, start_tick, line_length, custom_ticks, stimulus, text_color, response_max_length);
+      if (trial.show_finish_button) {
+        const button = document.createElement("button");
+        button.innerHTML = trial.trial_end_button;
+        button.classList.add("jspsych-numberline-finish-button");
+
+        container.appendChild(button);
+
+        const start_time = performance.now();
+
+        button.addEventListener("click", () => {
+          const end_time = performance.now();
+          const rt = Math.round(end_time - start_time);
+
+          this.jsPsych.finishTrial({
+            data1: 0,
+            data2: "response",
+            rt: rt,
+          });
+        });
+      }
     })();
   }
-}
-
+};
 export default NumberLinePlugin;
