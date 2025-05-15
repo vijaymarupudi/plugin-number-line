@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>jsPsychPluginNumberLine Example</title>
+  <script src="https://unpkg.com/jspsych"></script>
+  <!-- Load the published plugin package here, e.g.
+<script src="https://unpkg.com/plugin-number-line"></script>
+<script src="../dist/index.global.js"></script> -->
+  <script src="https://pixijs.download/v8.9.2/pixi.min.js"></script>
+  <script src="../dist/index.browser.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/jspsych/css/jspsych.css">
+</head>
+
+<body></body>
+<script>
+  /* initialize jsPsych */
+    const jsPsych = initJsPsych({
+      on_finish: function() {
+        jsPsych.data.displayData();
+      }
+    });
+
+  const trial1 = {
+    type: jsPsychPluginNumberLine,
+    label_min: "0",
+    label_max: "100",
+    line_type: "bounded",
+    stimulus:"80",
+    start_tick_coords: [50, 150],
+    canvas_width: 600,
+    canvas_height: 300,
+    line_length: 500,
+    response_max_length: 300,
+    preamble: `<h3>Bounded Type Demo</h3><p>Estimate the location of the number</p>`,
+    text_color: '0x0044BB',
+    require_interaction: true, 
+    trial_end_button: "Submit",        
+
+  };
+
+  const trial2 = {
+    type: jsPsychPluginNumberLine,
+    label_min: "0",
+    label_max: "10",
+    line_type: "unbounded",
+    stimulus:"80",
+    start_tick_coords: [50, 150],
+    canvas_width: 600,
+    canvas_height: 300,
+    line_length: 350,
+    response_max_length: 80,
+    preamble: `<h3>Unbounded Type Demo</h3><p>Estimate the location of the number</p>`,
+    text_color: '0x0044BB',
+    require_interaction: true, 
+    trial_end_button: "Submit",        
+
+  };
+
+  const trial3 = {
+    type: jsPsychPluginNumberLine,
+    label_min: "0",
+    label_max: "50",
+    stimulus: "80",
+    line_type: "universal",
+    start_tick_coords: [50, 150],
+    canvas_width: 600,
+    canvas_height: 300,
+    line_length: 250,
+    response_max_length: 150,
+    preamble: `<h3>Universal Type Demo</h3><p>Estimate the location of the number</p>`,
+    text_color: '0x0044BB',
+    require_interaction: true, 
+    trial_end_button: "Submit",        
+
+  };
+
+  
+  jsPsych.run([trial1,trial2,trial3])
+</script>
+
+</html>
