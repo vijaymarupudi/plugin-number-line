@@ -8,6 +8,10 @@ const info = <const>{
       type: ParameterType.STRING,
       default: '0x000000',
     },
+    response_max_length: {
+      type: ParameterType.INT,
+      default: 500,
+    },
     label_min: {
       type: ParameterType.STRING,
       default: [],
@@ -82,10 +86,9 @@ const { Application, Graphics, Container, Text } = window.PIXI
 
 import { version } from "../package.json";
 
-function addSlider(app: typeof Application.prototype, line_type, label_min, label_max, start_tick, line_length, custom_ticks, stimulus, text_color, onFirstMove) {
+function addSlider(app: typeof Application.prototype, line_type, label_min, label_max, start_tick, line_length, custom_ticks, stimulus, text_color, response_max_length onFirstMove) {
   
-  
-  
+
   const stageWidth = app.screen.width;
   const stageHeight = app.screen.height;
   app.stage.hitArea = app.screen;
@@ -130,7 +133,7 @@ function addSlider(app: typeof Application.prototype, line_type, label_min, labe
   if (line_type == "unbounded") {
     handle.x = sliderWidth  - handle.width / 2;
   } else {
-    handle.x =  - handle.width / 2;
+    handle.x = 0 - handle.width / 2;
   }
 
   const redLine = new Graphics();
@@ -198,11 +201,11 @@ function addSlider(app: typeof Application.prototype, line_type, label_min, labe
 
     const localX = slider.toLocal(e.global).x;
     if (line_type === "universal") {
-      handle.x = Math.max(- handle.width / 2, localX);
+      handle.x = Math.min(response_max_length, Math.max(0, localX)) - handle.width / 2;
     } else if (line_type === "bounded") {
-      handle.x = Math.max(- handle.width / 2, Math.min(localX, sliderWidth - handle.width / 2));
+      handle.x = Math.max(0, Math.min(localX, sliderWidth )) - handle.width / 2;
     } else if (line_type === "unbounded") {
-      handle.x = Math.max(- handle.width / 2, Math.max(localX, sliderWidth - handle.width / 2));
+      handle.x = Math.min(response_max_length, Math.max(0, Math.max(localX, sliderWidth))) - handle.width / 2;
     }
 
     redLine.clear()
@@ -218,6 +221,7 @@ function addSlider(app: typeof Application.prototype, line_type, label_min, labe
   });
 
 }
+
 
 class NumberLinePlugin implements JsPsychPlugin<Info> {
   static info = info;
@@ -263,14 +267,18 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
       let start_tick = trial.start_tick_coords;
       let line_length = trial.line_length;
       let text_color = trial.text_color;
+      let response_max_length = trial.response_max_length;
+
+
       let button: HTMLButtonElement | null = null;
       let require_interaction = trial.require_interaction;
-      addSlider(app, line_type, label_min, label_max, start_tick, line_length, custom_ticks, stimulus, text_color, () => {
+      addSlider(app, line_type, label_min, label_max, start_tick, line_length, custom_ticks, stimulus, text_color, response_max_length, () => {
         if (button) button.style.display = "block";
       });      
       
    
         button = document.createElement("button");
+
         button.innerHTML = trial.trial_end_button;
         button.classList.add("jspsych-numberline-finish-button");
 
@@ -279,6 +287,7 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
           button.style.display = "none";
 
         }
+
         const start_time = performance.now();
 
         button.addEventListener("click", () => {
@@ -297,3 +306,4 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
 };
 
 export default NumberLinePlugin;
+
