@@ -11,16 +11,17 @@ In addition to the [parameters available in all plugins](https://www.jspsych.org
 | stimulus            | string           | "8"                | String to be displayed as the target                                         |
 | label_min           | string           | "0"                | String indicating the element to display at the lower anchor                                         |
 | label_max           | string           | "10"               | String indicating the element to display at the upper-right anchor                                         |
-| preamble            | HTML string      | "Drag and drop the red bar to the position of the target number."                   |                                          |
+| preamble            | HTML string      | "Drag and drop the bar to the position of the target number."                   |                                          |
 | line_type           | string           | "universal"        | The type of number line task per Cohen & Ray (2020) Dev. Psychol. which controls the placement of labels and slider area (“bounded” = lower and upper label at ends of white line that spans line_length, “unbounded” = lower and upper labels, or “universal”)                                         |
 | canvas_width        | numeric          | 500                | array indicating the width of the canvas container in pixels                                         |
 | canvas_height       | numeric          | 100                | array indicating the height of the canvas container in pixels                                         |
-| start_tick          | numeric          | 10                 | indication of x location of the starting tick (y location is centered)                                         |
+| start_tick          | array of numerics | [10,50]           | array indicating the x and y location of the starting tick (in pixels)                                         |
 | line_length         | numeric          | 300                | the length of the white line in pixels; it must be less than the canvas_width. The upper right anchor will be placed at this value                                         |
-| response_length     | numeric          | 400                | the max length of the red response line in pixels; it must be less than the canvas_width. This determines the max response value in pixels                                         |
-| trial_end           | HTML string      | "FINISH"           | html for button that ends the trial                                         |
+| response_max_length | numeric          | 400                | the max length of the red response line in pixels; it must be less than the canvas_width. This determines the max response value in pixels                                         |
+| trial_end_button    | HTML string      | "FINISH"           | html for button that ends the trial                                         |
 | custom_ticks        | array of dictionaries  | null         | dictionary array with each dictionary having 'pos' and 'text' keys indicating the relative position of the tick label along the number line (e.g., [{pos: 0.25, text: "0.25"},{pos: 0.5, text: "0.5"}]) |
 | require_interaction | boolean          | true               | bool indicating whether the participant needs to interact with the handle before the trial_end button is enabled                                         |
+| text_color          | string           | "0x0044BB"         | hexadecimal code for the font color of string labels                                         |
 
 ## Data Generated
 
@@ -59,7 +60,7 @@ var trial = {
   label_min: "1",
   label_max: "10",
   line_length: 10
-  response_length: 300,
+  response_max_length: 300,
   canvas_width: 500
   line_type: "unbounded"
 }
