@@ -31,7 +31,7 @@
     canvas_width: 600,
     canvas_height: 300,
     line_length: 500,
-    response_max_length: 300,
+    response_max_length: 500,
     preamble: `<h3>Bounded Type Demo</h3><p>Estimate the location of the number</p>`,
     text_color: '0x0044BB',
     require_interaction: true, 
@@ -48,8 +48,8 @@
     start_tick_coords: [50, 150],
     canvas_width: 600,
     canvas_height: 300,
-    line_length: 350,
-    response_max_length: 80,
+    line_length: 50,
+    response_max_length: 400,
     preamble: `<h3>Unbounded Type Demo</h3><p>Estimate the location of the number</p>`,
     text_color: '0x0044BB',
     require_interaction: true, 
@@ -67,7 +67,7 @@
     canvas_width: 600,
     canvas_height: 300,
     line_length: 250,
-    response_max_length: 150,
+    response_max_length: 500,
     preamble: `<h3>Universal Type Demo</h3><p>Estimate the location of the number</p>`,
     text_color: '0x0044BB',
     require_interaction: true, 
@@ -75,8 +75,28 @@
 
   };
 
+
+  const trial4 = {
+    type: jsPsychPluginNumberLine,
+    label_min: "0",
+    label_max: "50",
+    stimulus: "80",
+    line_type: "universal",
+    start_tick_coords: [50, 150],
+    custom_ticks: [[0.25, "25%"],[0.5, "50%"],[0.75, "75%"]],
+    canvas_width: 600,
+    canvas_height: 300,
+    line_length: 250,
+    response_max_length: 500,
+    preamble: `<h3>Universal Type Demo with Custom Ticks</h3><p>Estimate the location of the number</p>`,
+    text_color: '0x0044BB',
+    require_interaction: true, 
+    trial_end_button: "Submit",        
+
+  };
+
   
-  jsPsych.run([trial1,trial2,trial3])
+  jsPsych.run([trial1,trial2,trial3,trial4])
 </script>
 
 </html>
