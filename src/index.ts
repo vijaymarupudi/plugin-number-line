@@ -8,6 +8,10 @@ const info = <const>{
       type: ParameterType.STRING,
       default: '0x000000',
     },
+    response_max_length: {
+      type: ParameterType.INT,
+      default: 500,
+    },
     label_min: {
       type: ParameterType.STRING,
       default: [],
@@ -44,7 +48,7 @@ const info = <const>{
       type: ParameterType.INT,
       default: 250,
     },
-    preamble: {
+    title: {
       type: ParameterType.STRING,
       default: "Drag the handle to estimate a value.",
     },
@@ -52,14 +56,6 @@ const info = <const>{
       type: ParameterType.SELECT,
       options: ["bounded", "unbounded", "universal"],
       default: "universal",
-    },
-    trial_end_button: {
-      type: ParameterType.HTML_STRING,
-      default: "Submit",
-    },
-    show_finish_button: {
-      type: ParameterType.BOOL,
-      default: true,
     },
   },
   data: {
@@ -81,7 +77,9 @@ const { Application, Graphics, Container, Text } = window.PIXI
 
 import { version } from "../package.json";
 
-function addSlider(app: typeof Application.prototype, line_type, label_min, label_max, start_tick, line_length, custom_ticks, stimulus, text_color) {
+
+
+function addSlider(app: typeof Application.prototype, line_type, label_min, label_max, start_tick, line_length, custom_ticks, stimulus, text_color, response_max_length ) {
   const stageWidth = app.screen.width;
   const stageHeight = app.screen.height;
   app.stage.hitArea = app.screen;
@@ -122,11 +120,10 @@ function addSlider(app: typeof Application.prototype, line_type, label_min, labe
   const handle = new Graphics().rect(0, -4 * 2, 4, 4 * 4).fill({ color: 0xffffff });
 
   handle.y = 0;
-
   if (line_type == "unbounded") {
     handle.x = sliderWidth  - handle.width / 2;
   } else {
-    handle.x =  - handle.width / 2;
+    handle.x = 0 - handle.width / 2;
   }
 
   const redLine = new Graphics();
@@ -193,19 +190,20 @@ function addSlider(app: typeof Application.prototype, line_type, label_min, labe
 
     const localX = slider.toLocal(e.global).x;
     if (line_type === "universal") {
-      handle.x = Math.max(- handle.width / 2, localX);
+      handle.x = Math.min(response_max_length, Math.max(0, localX)) - handle.width / 2;
     } else if (line_type === "bounded") {
-      handle.x = Math.max(- handle.width / 2, Math.min(localX, sliderWidth - handle.width / 2));
+      handle.x = Math.max(0, Math.min(localX, sliderWidth )) - handle.width / 2;
     } else if (line_type === "unbounded") {
-      handle.x = Math.max(- handle.width / 2, Math.max(localX, sliderWidth - handle.width / 2));
+      handle.x = Math.min(response_max_length, Math.max(0, Math.max(localX, sliderWidth))) - handle.width / 2;
     }
 
     redLine.clear()
       .moveTo(0, 2)
       .lineTo(handle.x, 2)
       .stroke({ color: 0xff0000, width: 4 });
-
   });
+
+  return { handle, sliderWidth};      //Data saving
 
 }
 
@@ -216,67 +214,40 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
 
   trial(display_element: HTMLElement, trial: TrialType<Info>) {
     (async () => {
-      const container = document.createElement("div");
-      container.classList.add("jspsych-numberline-container");
-      container.style.display = "flex";       
-      container.style.flexDirection = "column"; 
-      container.style.alignItems = "center";    
-      container.style.gap = "20px";             
-      display_element.appendChild(container);
-      
-      if (trial.preamble) {
-        const preamble = document.createElement("div");
-        preamble.innerHTML = trial.preamble;
-        preamble.style.fontSize = "16px";
-        preamble.style.marginBottom = "10px";
-        preamble.style.textAlign = "center";
-        container.appendChild(preamble);
-      }
-
       const app = new Application();
 
-      let canvas_width = trial.canvas_width
-      let canvas_height = trial.canvas_height
       await app.init({
         background: '#DDDDDD',
-        width: canvas_width,     // desired canvas width
-        height:canvas_height,    // desired canvas height
+        width: trial.canvas_width,
+        height: trial.canvas_height,
       });
-      
-      container.appendChild(app.canvas);
+      display_element.appendChild(app.canvas);
 
-      let label_min = trial.label_min;
-      let label_max = trial.label_max;
-      let line_type = trial.line_type;
-      let stimulus = trial.stimulus;
-      let custom_ticks = trial.custom_ticks;
-      let start_tick = trial.start_tick_coords;
-      let line_length = trial.line_length;
-      let text_color = trial.text_color;
-      
-      addSlider(app, line_type, label_min, label_max, start_tick, line_length, custom_ticks, stimulus, text_color);
-      if (trial.show_finish_button) {
-        const button = document.createElement("button");
-        button.innerHTML = trial.trial_end_button;
-        button.classList.add("jspsych-numberline-finish-button");
+      const { handle, sliderWidth } = addSlider(
+        app,
+        trial.line_type,
+        trial.label_min,
+        trial.label_max,
+        trial.start_tick_coords,
+        trial.line_length,
+        trial.custom_ticks,
+        trial.stimulus,
+        trial.text_color,
+        trial.response_max_length
+      );
 
-        container.appendChild(button);
+      // save the data
+      handle.on('pointerup', () => {
+        const handleCenterX = handle.x + handle.width / 2;
+        const responseRatio = handleCenterX / sliderWidth; // position of handle : 0-1
 
-        const start_time = performance.now();
-
-        button.addEventListener("click", () => {
-          const end_time = performance.now();
-          const rt = Math.round(end_time - start_time);
-
-          this.jsPsych.finishTrial({
-            data1: 0,
-            data2: "response",
-            rt: rt,
-          });
+        this.jsPsych.finishTrial({
+          data1: Math.round(responseRatio * 1000),  // position of handle : 0-1000
+          data2: "response_recorded",
         });
-      }
+      });
     })();
   }
-};
+}
 
 export default NumberLinePlugin;
