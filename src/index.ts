@@ -154,24 +154,32 @@ function addSlider(app: typeof Application.prototype, line_type, label_min, labe
       Assets.load(endimage),
       Assets.load(stimulusimage)
     ]).then(([startTex, endTex, stimTex]) => {
+
       const startSprite = new Sprite(startTex);
+      startSprite.name = "start_img";
       startSprite.anchor.set(0.5, 0);
       startSprite.x = 0;
       startSprite.y = startTick.height + 5;
+
       startTick.addChild(startSprite);
   
       const endSprite = new Sprite(endTex);
+      endSprite.name = "end_img";
       endSprite.anchor.set(0.5, 0);
       endSprite.x = 0;
       endSprite.y = endTick.height + 5;
+
       endTick.addChild(endSprite);
   
       const stimSprite = new Sprite(stimTex);
+      stimSprite.name = "stimulus_img";
       stimSprite.anchor.set(0.5, 0);
       stimSprite.x = 0;
       stimSprite.y = startSprite.height + 10;
+
       startSprite.addChild(stimSprite);
-    });
+
+    })
   }
   else {
     const startLabel = new Text({
@@ -285,7 +293,6 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
 
 
 
-      let require_interaction = trial.require_interaction;
       let button: HTMLButtonElement | null = null;
         
       const { handle, sliderWidth } = addSlider(
@@ -299,9 +306,9 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
         trial.stimulus,
         trial.text_color,
         trial.response_max_length,
-        trial.image_max, 
-        trial.image_min, 
         trial.stimage,
+        trial.image_max,
+        trial.image_min,
         () => {
 
         if (button) button.style.display = "block";
@@ -311,15 +318,16 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
         button = document.createElement("button");
 
         button.innerHTML = trial.trial_end_button;
+        button.id = "jspsych-numberline-response-next";
         button.classList.add("jspsych-numberline-finish-button");
 
         container.appendChild(button);
         if (trial.require_interaction) {
-          button.style.display = "none";
-
+          button.disabled = true;
         }
 
       //Data saving: click-release
+      let start_time = null;
       let first_slide_start_rt = null;
       let first_slide_end_rt = null;
       let last_slide_start_rt = null;
@@ -330,17 +338,20 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
         const now = performance.now();
         drag_count += 1;
         if (first_slide_start_rt === null) {
-          first_slide_start_rt = now;
+          first_slide_start_rt = Math.round(now - start_time);
+          display_element.querySelector<HTMLInputElement>(
+            "#jspsych-numberline-response-next"
+          ).disabled = false;
         }
-        last_slide_start_rt = now;
+        last_slide_start_rt = Math.round(now - start_time);
       });
 
       handle.on('pointerup', () => {
         const now = performance.now();
         if (first_slide_end_rt === null) {
-          first_slide_end_rt = now;
+          first_slide_end_rt = Math.round(now - start_time);          
         }
-        last_slide_end_rt = now;
+        last_slide_end_rt = Math.round(now - start_time);
       });
 
       
@@ -351,23 +362,25 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
         container.appendChild(button);
 
         button.addEventListener("click", () => {
-          const end_rt = performance.now();   // Reaction time when the finish button is clicked (ms)
+          const end_rt = Math.round(performance.now() - start_time);   // Reaction time when the finish button is clicked (ms)
           const handleCenterX = handle.x + handle.width / 2; // Handle center position in pixels
 
         this.jsPsych.finishTrial({
           final_handle_position: handleCenterX,  // Final handle position in pixels (absolute x-coordinate on the slider)
-          total_rt: end_rt,   // Reaction time when the "Finish" button is clicked (milliseconds)
-          first_slide_start_rt: first_slide_start_rt,   // Timestamp of the first pointerdown event on the handle (milliseconds)
-          first_slide_end_rt: first_slide_end_rt,   // Timestamp of the first pointerup event on the handle (milliseconds)
-          last_slide_start_rt: last_slide_start_rt,   // Timestamp of the last pointerdown event on the handle (milliseconds)
-          last_slide_end_rt: last_slide_end_rt,   // Timestamp of the last pointerup event on the handle (milliseconds)
+          slider_start_timestamp: Math.round(start_time), // Timestamp when the slider is rendered (miliseconds)
+          response_rt: end_rt,   // Reaction time when the "Finish" button is clicked (milliseconds)
+          first_slide_start_rt: first_slide_start_rt,   // Response time of the first pointerdown event on the handle (milliseconds)
+          first_slide_end_rt: first_slide_end_rt,   // Response time of the first pointerup event on the handle (milliseconds)
+          last_slide_start_rt: last_slide_start_rt,   // Response time of the last pointerdown event on the handle (milliseconds)
+          last_slide_end_rt: last_slide_end_rt,   // Response time of the last pointerup event on the handle (milliseconds)
           drag_count: drag_count,   // Total number of complete drag actions (pointerdown + pointerup pairs)
          });
         });
 
-      
+      start_time = performance.now();
       
     })();
+
   }
 }
 
