@@ -8,10 +8,10 @@ In addition to the [parameters available in all plugins](https://www.jspsych.org
 
 | Parameter           | Type             | Default Value      | Description                              |
 | ------------------- | ---------------- | ------------------ | ---------------------------------------- |
-| stimulus            | string           | "8"                | String to be displayed as the text element target.                                         |
+| text_stimulus            | string           | "8"                | String to be displayed as the text element target.                                         |
 | text_min           | string           | "0"                | String indicating the text element to display at the lower anchor                                         |
 | text_max           | string           | "10"               | String indicating the text element to display at the upper-right anchor                                         |
-| media_stimulus        | string           | undefined          | The path of the media file to be displayed as the target. This takes precedence over 'stimulus'.                                         |
+| media_stimulus        | string           | undefined          | The path of the media file to be displayed as the target. This takes precedence over 'text_stimulus'.                                         |
 | media_min             | string           | undefined          | The path of the media file to display at the lower anchor. This takes precedence over 'text_min'.                                         |
 | media_max             | string           | undefined          | The path of the media file to display at the upper-right anchor. This takes precedence over 'text_max'.                                         |
 | media_loop             | boolean           | false          | Whether to loop the media files.                                         |
