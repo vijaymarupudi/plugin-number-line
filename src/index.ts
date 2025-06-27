@@ -12,29 +12,33 @@ const info = <const>{
       type: ParameterType.INT,
       default: 500,
     },
-    label_min: {
+    text_min: {
       type: ParameterType.STRING,
       default: [],
     },
-    label_max: {
+    text_max: {
       type: ParameterType.STRING,
       default: [],
     },
-    stimulus: {
+    text_stimulus: {
       type: ParameterType.STRING,
       default: [],
     },
-    image_min: {
-      type: ParameterType.IMAGE,
+    media_min: {
+      type: ParameterType.STRING,
       default: null,
     },
-    image_max: {
-      type: ParameterType.IMAGE,
+    media_max: {
+      type: ParameterType.STRING,
       default: null,
     },
-    stimage: {
-      type: ParameterType.IMAGE,
+    media_stimulus: {
+      type: ParameterType.STRING,
       default: null,
+    },
+    media_loop: {
+      type: ParameterType.BOOL,
+      default: false,
     },
     line_type: {
       type: ParameterType.SELECT,
@@ -46,11 +50,11 @@ const info = <const>{
       default: [],
     },
     canvas_width: {
-      type: ParameterType.STRING,
+      type: ParameterType.INT,
       default: 600,
     },
     canvas_height: {
-      type: ParameterType.STRING,
+      type: ParameterType.INT,
       default: 300,
     },
     start_tick_coords: {
@@ -84,31 +88,31 @@ const { Application, Graphics, Container, Text, Assets, Sprite } = window.PIXI
 
 import { version } from "../package.json";
 
-function addSlider(app: typeof Application.prototype, line_type, label_min, label_max, start_tick, line_length, custom_ticks, stimulus, text_color, response_max_length, stimage, image_max, image_min, onFirstMove) {
-  const stageWidth = app.screen.width;
-  const stageHeight = app.screen.height;
+function add_slider(app: typeof Application.prototype, line_type, text_min, text_max, start_tick_coords, line_length, custom_ticks, text_stimulus, text_color, response_max_length, media_stimulus, media_max, media_min, media_loop,on_first_move) {
+  const stage_width = app.screen.width;
+  const stage_height = app.screen.height;
   app.stage.hitArea = app.screen;
 
-  const sliderWidth = line_length;
+  const slider_width = line_length;
 
-  const slider = new Graphics().rect(0, 0, sliderWidth, 4).fill({ color: 0x272d37 });
-  slider.x = start_tick[0];
-  slider.y = start_tick[1];
+  const slider = new Graphics().rect(0, 0, slider_width, 4).fill({ color: 0x272d37 });
+  slider.x = start_tick_coords[0];
+  slider.y = start_tick_coords[1];
 
-  const startTick = new Graphics().rect(0, 0, 4, 4 * 8).fill({ color: 0x272d37 });
-  const endTick = new Graphics().rect(0, 0, 4, 4 * 8).fill({ color: 0x272d37 });
-  startTick.x = -2;
-  startTick.y = -4 * 4;
-  endTick.x = sliderWidth - 2;
-  endTick.y = -4 * 4;
+  const start_tick = new Graphics().rect(0, 0, 4, 4 * 8).fill({ color: 0x272d37 });
+  const end_tick = new Graphics().rect(0, 0, 4, 4 * 8).fill({ color: 0x272d37 });
+  start_tick.x = -2;
+  start_tick.y = -4 * 4;
+  end_tick.x = slider_width - 2;
+  end_tick.y = -4 * 4;
 
 
 
   for (let i = 0; i < custom_ticks.length; i++) {
     const [xi, yi] = custom_ticks[i];
-    const xPos = xi * sliderWidth;
+    const xPos = xi * slider_width;
   
-    const tick = new Graphics().rect(0, startTick.y, 2, 8 * 4).fill({ color: 0x000000 });
+    const tick = new Graphics().rect(0, start_tick.y, 2, 8 * 4).fill({ color: 0x000000 });
     tick.x = xPos - 1;
     slider.addChild(tick);
   
@@ -118,7 +122,7 @@ function addSlider(app: typeof Application.prototype, line_type, label_min, labe
     });
     label.anchor.set(0.5, 0); // anchor top-center
     label.x = xPos;
-    label.y = startTick.y + 8 * 4 + 4; // position just below the tick
+    label.y = start_tick.y + 8 * 4 + 4; // position just below the tick
     slider.addChild(label);
   }
   
@@ -126,88 +130,101 @@ function addSlider(app: typeof Application.prototype, line_type, label_min, labe
 
   handle.y = 0;
   if (line_type == "unbounded") {
-    handle.x = sliderWidth  - handle.width / 2;
+    handle.x = slider_width  - handle.width / 2;
   } else {
     handle.x = 0 - handle.width / 2;
   }
 
-  const redLine = new Graphics();
-  redLine.clear().moveTo(0, 2).lineTo(handle.x, 2).stroke({ color: 0xff0000, width: 4 });
+  const red_line = new Graphics();
+  red_line.clear().moveTo(0, 2).lineTo(handle.x, 2).stroke({ color: 0xff0000, width: 4 });
 
   // Add children in correct render order
-  slider.addChild(redLine);
-  slider.addChild(startTick);
-  slider.addChild(endTick);
+  slider.addChild(red_line);
+  slider.addChild(start_tick);
+  slider.addChild(end_tick);
   slider.addChild(handle);
   app.stage.addChild(slider);
 
 
   // Image labels
 
-  if (stimage != null) {
-    const startimage = image_min;
-    const endimage = image_max;
-    const stimulusimage = stimage;
+  if (media_stimulus != null) {
+    const start_image = media_min;
+    const end_image = media_max;
+    const stimulus_image = media_stimulus;
   
     Promise.all([
-      Assets.load(startimage),
-      Assets.load(endimage),
-      Assets.load(stimulusimage)
-    ]).then(([startTex, endTex, stimTex]) => {
+      Assets.load(start_image),
+      Assets.load(end_image),
+      Assets.load(stimulus_image)
+    ]).then(([start_tex, end_tex, stim_tex]) => {
 
-      const startSprite = new Sprite(startTex);
-      startSprite.name = "start_img";
-      startSprite.anchor.set(0.5, 0);
-      startSprite.x = 0;
-      startSprite.y = startTick.height + 5;
+      //add looping to video media
+      if(media_loop){
+        if(start_tex.baseTexture.resource instanceof HTMLVideoElement){
+          start_tex.baseTexture.resource.loop = true;
+        }
+        if(end_tex.baseTexture.resource instanceof HTMLVideoElement){
+          end_tex.baseTexture.resource.loop = true;
+        }
+        if(stim_tex.baseTexture.resource instanceof HTMLVideoElement){
+          stim_tex.baseTexture.resource.loop = true;
+        }
+      }
+      
+      const start_sprite = new Sprite(start_tex);
+      start_sprite.name = "start_img";
+      start_sprite.anchor.set(0.5, 0);
+      start_sprite.x = 0;
+      start_sprite.y = start_tick.height + 5;
 
-      startTick.addChild(startSprite);
+      start_tick.addChild(start_sprite);
   
-      const endSprite = new Sprite(endTex);
-      endSprite.name = "end_img";
-      endSprite.anchor.set(0.5, 0);
-      endSprite.x = 0;
-      endSprite.y = endTick.height + 5;
+      const end_sprite = new Sprite(end_tex);
+      end_sprite.name = "end_img";
+      end_sprite.anchor.set(0.5, 0);
+      end_sprite.x = 0;
+      end_sprite.y = end_tick.height + 5;
 
-      endTick.addChild(endSprite);
+      end_tick.addChild(end_sprite);
   
-      const stimSprite = new Sprite(stimTex);
-      stimSprite.name = "stimulus_img";
-      stimSprite.anchor.set(0.5, 0);
-      stimSprite.x = 0;
-      stimSprite.y = startSprite.height + 10;
+      const stim_sprite = new Sprite(stim_tex);
+      stim_sprite.name = "stimulus_img";
+      stim_sprite.anchor.set(0.5, 0);
+      stim_sprite.x = 0;
+      stim_sprite.y = start_sprite.height + 10;
 
-      startSprite.addChild(stimSprite);
+      start_sprite.addChild(stim_sprite);
 
     })
   }
   else {
-    const startLabel = new Text({
-      text: label_min,
+    const start_label = new Text({
+      text: text_min,
       style: { fill: text_color, fontSize: 14, fontFamily: 'Arial' },
     });
-    startLabel.anchor.set(0.5, 0);
-    startLabel.x = 0;
-    startLabel.y = startTick.height + 5;
-    startTick.addChild(startLabel);
+    start_label.anchor.set(0.5, 0);
+    start_label.x = 0;
+    start_label.y = start_tick.height + 5;
+    start_tick.addChild(start_label);
   
-    const endLabel = new Text({
-      text: label_max,
+    const end_label = new Text({
+      text: text_max,
       style: { fill: text_color, fontSize: 14, fontFamily: 'Arial' },
     });
-    endLabel.anchor.set(0.5, 0);
-    endLabel.x = 0;
-    endLabel.y = endTick.height + 5;
-    endTick.addChild(endLabel);
+    end_label.anchor.set(0.5, 0);
+    end_label.x = 0;
+    end_label.y = end_tick.height + 5;
+    end_tick.addChild(end_label);
   
     const stimulus_text = new Text({
-      text: stimulus,
+      text: text_stimulus,
       style: { fill: text_color, fontSize: 14, fontFamily: 'Arial' },
     });
     stimulus_text.anchor.set(0.5, 0);
     stimulus_text.x = 0;
-    stimulus_text.y = startLabel.height + 5;
-    startLabel.addChild(stimulus_text);
+    stimulus_text.y = start_label.height + 5;
+    start_label.addChild(stimulus_text);
   }
   
   // === Drag logic ===
@@ -215,7 +232,7 @@ function addSlider(app: typeof Application.prototype, line_type, label_min, labe
 
   handle.eventMode = 'static';
   handle.cursor = 'pointer';
-  let hasMoved = false;
+  let has_moved = false;
 
   handle.on('pointerdown', () => {
     dragging = true;
@@ -239,24 +256,24 @@ function addSlider(app: typeof Application.prototype, line_type, label_min, labe
     if (line_type === "universal") {
       handle.x = Math.min(response_max_length, Math.max(0, localX)) - handle.width / 2;
     } else if (line_type === "bounded") {
-      handle.x = Math.max(0, Math.min(localX, sliderWidth )) - handle.width / 2;
+      handle.x = Math.max(0, Math.min(localX, slider_width )) - handle.width / 2;
     } else if (line_type === "unbounded") {
-      handle.x = Math.min(response_max_length, Math.max(0, Math.max(localX, sliderWidth))) - handle.width / 2;
+      handle.x = Math.min(response_max_length, Math.max(0, Math.max(localX, slider_width))) - handle.width / 2;
     }
 
-    redLine.clear()
+    red_line.clear()
       .moveTo(0, 2)
       .lineTo(handle.x, 2)
       .stroke({ color: 0xff0000, width: 4 });
 
-    if (!hasMoved) {
-      hasMoved = true;
-      onFirstMove?.();  
+    if (!has_moved) {
+      has_moved = true;
+      on_first_move?.();  
     }
 
   });
 
-  return { handle, sliderWidth};      //Data saving
+  return { handle, slider_width};      //Data saving
 
 }
 
@@ -295,20 +312,21 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
 
       let button: HTMLButtonElement | null = null;
         
-      const { handle, sliderWidth } = addSlider(
+      const { handle, slider_width } = add_slider(
         app,
         trial.line_type,
-        trial.label_min,
-        trial.label_max,
+        trial.text_min,
+        trial.text_max,
         trial.start_tick_coords,
         trial.line_length,
         trial.custom_ticks,
-        trial.stimulus,
+        trial.text_stimulus,
         trial.text_color,
         trial.response_max_length,
-        trial.stimage,
-        trial.image_max,
-        trial.image_min,
+        trial.media_stimulus,
+        trial.media_max,
+        trial.media_min,
+        trial.media_loop,
         () => {
 
         if (button) button.style.display = "block";
