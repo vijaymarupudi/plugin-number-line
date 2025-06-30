@@ -65,6 +65,10 @@ const info = <const>{
       type: ParameterType.INT,
       default: 250,
     },
+    line_thickness: {
+      type: ParameterType.INT,
+      default: 4,
+    },
     preamble: {
       type: ParameterType.STRING,
       default: "Drag the handle to estimate a value.",
@@ -104,18 +108,19 @@ const { Application, Graphics, Container, Text, Assets, Sprite } = window.PIXI
 
 import { version } from "../package.json";
 
-function add_slider(app: typeof Application.prototype, line_type, text_min, text_max, start_tick_coords, line_length, custom_ticks, text_stimulus, text_color, response_max_length, media_stimulus, media_max, media_min, media_loop,handle_color,slider_color,red_line_color,on_first_move) {
+function add_slider(app: typeof Application.prototype, line_type, text_min, text_max, start_tick_coords, line_length, line_thickness, custom_ticks, text_stimulus, text_color, response_max_length, media_stimulus, media_max, media_min, media_loop,handle_color,slider_color,red_line_color,on_first_move) {
   const stage_width = app.screen.width;
   const stage_height = app.screen.height;
   app.stage.hitArea = app.screen;
 
   const slider_width = line_length;
+  const slider_thickness = line_thickness;
 
   console.log("slider_color",slider_color);
   console.log("handle_color",handle_color);
   console.log("red_line_color",red_line_color);
 
-  const slider = new Graphics().rect(0, 0, slider_width, 4).fill({ color: slider_color });
+  const slider = new Graphics().rect(0, 0, slider_width, slider_thickness).fill({ color: slider_color });
   slider.x = start_tick_coords[0];
   slider.y = start_tick_coords[1];
 
@@ -339,6 +344,7 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
         trial.text_max,
         trial.start_tick_coords,
         trial.line_length,
+        trial.line_thickness,
         trial.custom_ticks,
         trial.text_stimulus,
         trial.text_color,
