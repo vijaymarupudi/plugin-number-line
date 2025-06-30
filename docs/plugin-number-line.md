@@ -25,7 +25,12 @@ In addition to the [parameters available in all plugins](https://www.jspsych.org
 | trial_end_button    | HTML string      | "FINISH"           | html for button that ends the trial                                         |
 | custom_ticks        | array of arrays  | null         | array of length two arrays with each array having a numeric proportion (0 to 1) and string label indicating the relative position of the tick label along the number line (e.g., [[0.25, "25%"],[0.5, "50%"],[0.75, "75%"]]) |
 | require_interaction | boolean          | true               | bool indicating whether the participant needs to interact with the handle before the trial_end_button is enabled                                         |
-| text_color          | string           | "0x0044BB"         | hexadecimal code for the font color of text labels.                                         |
+| text_color          | string           | "#0044BB"         | hexadecimal code for the font color of text labels.                                         |
+| handle_color        | string           | "#ffffff"         | hexadecimal code for the color of the slider handle.                                         |
+| slider_color        | string           | "#000000"         | hexadecimal code for the color of the slider.                                         |
+| line_color        | string             | "#ff0000"         | hexadecimal code for the color of the line drawn from the lower tick to the handle.                                         |
+| background_color        | string           | "#DDDDDD"         | hexadecimal code for the color of canvas background.                                         |
+
 
 When using media, they are displayed in the same pixel resolution of the corresponding files and must be hosted on a server.
 

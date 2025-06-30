@@ -6,7 +6,7 @@ const info = <const>{
   parameters: {
     text_color: {
       type: ParameterType.STRING,
-      default: '0x000000',
+      default: '#000000',
     },
     response_max_length: {
       type: ParameterType.INT,
@@ -69,6 +69,22 @@ const info = <const>{
       type: ParameterType.STRING,
       default: "Drag the handle to estimate a value.",
     },
+     handle_color: {
+      type: ParameterType.STRING,
+      default: '#ffffff',
+    },
+     slider_color: {
+      type: ParameterType.STRING,
+      default: '#000000',
+    },
+     line_color: {
+      type: ParameterType.STRING,
+      default: '#ff0000',
+    },
+     background_color: {
+      type: ParameterType.STRING,
+      default: '#DDDDDD',
+    },
   },
   data: {
     final_handle_position: { type: ParameterType.INT },
@@ -88,19 +104,23 @@ const { Application, Graphics, Container, Text, Assets, Sprite } = window.PIXI
 
 import { version } from "../package.json";
 
-function add_slider(app: typeof Application.prototype, line_type, text_min, text_max, start_tick_coords, line_length, custom_ticks, text_stimulus, text_color, response_max_length, media_stimulus, media_max, media_min, media_loop,on_first_move) {
+function add_slider(app: typeof Application.prototype, line_type, text_min, text_max, start_tick_coords, line_length, custom_ticks, text_stimulus, text_color, response_max_length, media_stimulus, media_max, media_min, media_loop,handle_color,slider_color,red_line_color,on_first_move) {
   const stage_width = app.screen.width;
   const stage_height = app.screen.height;
   app.stage.hitArea = app.screen;
 
   const slider_width = line_length;
 
-  const slider = new Graphics().rect(0, 0, slider_width, 4).fill({ color: 0x272d37 });
+  console.log("slider_color",slider_color);
+  console.log("handle_color",handle_color);
+  console.log("red_line_color",red_line_color);
+
+  const slider = new Graphics().rect(0, 0, slider_width, 4).fill({ color: slider_color });
   slider.x = start_tick_coords[0];
   slider.y = start_tick_coords[1];
 
-  const start_tick = new Graphics().rect(0, 0, 4, 4 * 8).fill({ color: 0x272d37 });
-  const end_tick = new Graphics().rect(0, 0, 4, 4 * 8).fill({ color: 0x272d37 });
+  const start_tick = new Graphics().rect(0, 0, 4, 4 * 8).fill({ color: slider_color });
+  const end_tick = new Graphics().rect(0, 0, 4, 4 * 8).fill({ color: slider_color });
   start_tick.x = -2;
   start_tick.y = -4 * 4;
   end_tick.x = slider_width - 2;
@@ -112,13 +132,13 @@ function add_slider(app: typeof Application.prototype, line_type, text_min, text
     const [xi, yi] = custom_ticks[i];
     const xPos = xi * slider_width;
   
-    const tick = new Graphics().rect(0, start_tick.y, 2, 8 * 4).fill({ color: 0x000000 });
+    const tick = new Graphics().rect(0, start_tick.y, 2, 8 * 4).fill({ color: slider_color });
     tick.x = xPos - 1;
     slider.addChild(tick);
   
     const label = new Text({
       text: yi,
-      style: { fontSize: 10, fill: 0x000000},
+      style: { fontSize: 10, fill: text_color},
     });
     label.anchor.set(0.5, 0); // anchor top-center
     label.x = xPos;
@@ -126,7 +146,7 @@ function add_slider(app: typeof Application.prototype, line_type, text_min, text
     slider.addChild(label);
   }
   
-  const handle = new Graphics().rect(0, -4 * 2, 4, 4 * 4).fill({ color: 0xffffff });
+  const handle = new Graphics().rect(0, -4 * 2, 4, 4 * 4).fill({ color: handle_color });
 
   handle.y = 0;
   if (line_type == "unbounded") {
@@ -136,7 +156,7 @@ function add_slider(app: typeof Application.prototype, line_type, text_min, text
   }
 
   const red_line = new Graphics();
-  red_line.clear().moveTo(0, 2).lineTo(handle.x, 2).stroke({ color: 0xff0000, width: 4 });
+  red_line.clear().moveTo(0, 2).lineTo(handle.x, 2).stroke({ color: red_line_color, width: 4 });
 
   // Add children in correct render order
   slider.addChild(red_line);
@@ -264,7 +284,7 @@ function add_slider(app: typeof Application.prototype, line_type, text_min, text
     red_line.clear()
       .moveTo(0, 2)
       .lineTo(handle.x, 2)
-      .stroke({ color: 0xff0000, width: 4 });
+      .stroke({ color: red_line_color, width: 4 });
 
     if (!has_moved) {
       has_moved = true;
@@ -302,7 +322,7 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
         }
         const app = new Application();
         await app.init({
-          background: '#DDDDDD',
+          background: trial.background_color,
           width: trial.canvas_width,
           height: trial.canvas_height,
         });
@@ -327,6 +347,9 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
         trial.media_max,
         trial.media_min,
         trial.media_loop,
+        trial.handle_color,
+        trial.slider_color,
+        trial.line_color,
         () => {
 
         if (button) button.style.display = "block";
