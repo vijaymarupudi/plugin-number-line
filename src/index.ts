@@ -65,6 +65,10 @@ const info = <const>{
       type: ParameterType.INT,
       default: 250,
     },
+    line_thickness: {
+      type: ParameterType.INT,
+      default: 4,
+    },
     preamble: {
       type: ParameterType.STRING,
       default: "Drag the handle to estimate a value.",
@@ -85,6 +89,10 @@ const info = <const>{
       type: ParameterType.STRING,
       default: '#DDDDDD',
     },
+    label_line_distance: {
+      type: ParameterType.INT,
+      default: 5, 
+    }
   },
   data: {
     final_handle_position: { type: ParameterType.INT },
@@ -104,18 +112,19 @@ const { Application, Graphics, Container, Text, Assets, Sprite } = window.PIXI
 
 import { version } from "../package.json";
 
-function add_slider(app: typeof Application.prototype, line_type, text_min, text_max, start_tick_coords, line_length, custom_ticks, text_stimulus, text_color, response_max_length, media_stimulus, media_max, media_min, media_loop,handle_color,slider_color,red_line_color,on_first_move) {
+function add_slider(app: typeof Application.prototype, line_type, text_min, text_max, start_tick_coords, line_length, line_thickness, custom_ticks, text_stimulus, text_color, response_max_length, media_stimulus, media_max, media_min, media_loop, handle_color, slider_color, red_line_color, on_first_move, label_line_distance) {
   const stage_width = app.screen.width;
   const stage_height = app.screen.height;
   app.stage.hitArea = app.screen;
 
   const slider_width = line_length;
+  const slider_thickness = line_thickness;
 
   console.log("slider_color",slider_color);
   console.log("handle_color",handle_color);
   console.log("red_line_color",red_line_color);
 
-  const slider = new Graphics().rect(0, 0, slider_width, 4).fill({ color: slider_color });
+  const slider = new Graphics().rect(0, 0, slider_width, slider_thickness).fill({ color: slider_color });
   slider.x = start_tick_coords[0];
   slider.y = start_tick_coords[1];
 
@@ -142,7 +151,7 @@ function add_slider(app: typeof Application.prototype, line_type, text_min, text
     });
     label.anchor.set(0.5, 0); // anchor top-center
     label.x = xPos;
-    label.y = start_tick.y + 8 * 4 + 4; // position just below the tick
+    label.y = start_tick.y + 8 * 4 + label_line_distance; // position just below the tick
     slider.addChild(label);
   }
   
@@ -225,7 +234,7 @@ function add_slider(app: typeof Application.prototype, line_type, text_min, text
     });
     start_label.anchor.set(0.5, 0);
     start_label.x = 0;
-    start_label.y = start_tick.height + 5;
+    start_label.y = start_tick.height + label_line_distance;
     start_tick.addChild(start_label);
   
     const end_label = new Text({
@@ -234,7 +243,7 @@ function add_slider(app: typeof Application.prototype, line_type, text_min, text
     });
     end_label.anchor.set(0.5, 0);
     end_label.x = 0;
-    end_label.y = end_tick.height + 5;
+    end_label.y = end_tick.height + label_line_distance;
     end_tick.addChild(end_label);
   
     const stimulus_text = new Text({
@@ -243,7 +252,7 @@ function add_slider(app: typeof Application.prototype, line_type, text_min, text
     });
     stimulus_text.anchor.set(0.5, 0);
     stimulus_text.x = 0;
-    stimulus_text.y = start_label.height + 5;
+    stimulus_text.y = start_label.height + label_line_distance;
     start_label.addChild(stimulus_text);
   }
   
@@ -339,6 +348,7 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
         trial.text_max,
         trial.start_tick_coords,
         trial.line_length,
+        trial.line_thickness,
         trial.custom_ticks,
         trial.text_stimulus,
         trial.text_color,
@@ -351,9 +361,10 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
         trial.slider_color,
         trial.line_color,
         () => {
-
-        if (button) button.style.display = "block";
-      });
+          if (button) button.style.display = "block";
+        },
+        trial.label_line_distance
+      );
       
    
         button = document.createElement("button");
