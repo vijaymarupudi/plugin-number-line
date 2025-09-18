@@ -124,16 +124,16 @@ function add_slider(app: typeof Application.prototype, line_type, text_min, text
   console.log("handle_color",handle_color);
   console.log("red_line_color",red_line_color);
 
-  const slider = new Graphics().rect(0, 0, slider_width, slider_thickness).fill({ color: slider_color });
+  const slider = new Graphics().rect(0, -slider_thickness / 2, slider_width, slider_thickness).fill({ color: slider_color });
   slider.x = start_tick_coords[0];
   slider.y = start_tick_coords[1];
-
-  const start_tick = new Graphics().rect(0, 0, 4, 4 * 8).fill({ color: slider_color });
-  const end_tick = new Graphics().rect(0, 0, 4, 4 * 8).fill({ color: slider_color });
+  
+  const start_tick = new Graphics().rect(0, 0, slider_thickness, slider_thickness * 8).fill({ color: slider_color });
+  const end_tick = new Graphics().rect(0, 0, slider_thickness, slider_thickness * 8).fill({ color: slider_color });
   start_tick.x = -2;
-  start_tick.y = -4 * 4;
+  start_tick.y = -4 * slider_thickness;
   end_tick.x = slider_width - 2;
-  end_tick.y = -4 * 4;
+  end_tick.y = -4 * slider_thickness;
 
 
 
@@ -155,17 +155,20 @@ function add_slider(app: typeof Application.prototype, line_type, text_min, text
     slider.addChild(label);
   }
   
-  const handle = new Graphics().rect(0, -4 * 2, 4, 4 * 4).fill({ color: handle_color });
+  const handle = new Graphics().rect(0, -4 * slider_thickness / 2, slider_thickness, 4 * slider_thickness).fill({ color: handle_color });
 
   handle.y = 0;
   if (line_type == "unbounded") {
-    handle.x = slider_width  - handle.width / 2;
+    handle.x = slider_width  - handle.width / 2 ;
   } else {
     handle.x = 0 - handle.width / 2;
   }
 
+  const red_line_width = slider_thickness /2;
   const red_line = new Graphics();
-  red_line.clear().moveTo(0, 2).lineTo(handle.x, 2).stroke({ color: red_line_color, width: 4 });
+
+  red_line.y = -red_line_width / 2;
+  red_line.clear().moveTo(0, 0).lineTo(handle.x, 0).stroke({ color: red_line_color, width: red_line_width });
 
   // Add children in correct render order
   slider.addChild(red_line);
