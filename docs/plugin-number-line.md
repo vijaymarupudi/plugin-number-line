@@ -1,6 +1,6 @@
 # plugin-number-line
 
-An implemention of a number line estimation task outlined by Cohen and Ray that supports the bounded, unbounded, and universal versions.
+An implemention of a number line estimation task outlined by Cohen and Ray that supports the bounded, unbounded, and universal versions. Additional notes and information about the plugin can be found at [this](https://docs.google.com/document/d/1MaCpcqHrfIrGJety3raX21c7KvF_8QZn2HDBMjEHD78/edit?usp=sharing) link.
 
 ## Parameters
 
