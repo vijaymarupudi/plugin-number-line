@@ -15,22 +15,22 @@ In addition to the [parameters available in all plugins](https://www.jspsych.org
 | media_min             | string           | undefined          | The path of the media file to display at the lower anchor. This takes precedence over 'text_min'.                                         |
 | media_max             | string           | undefined          | The path of the media file to display at the upper-right anchor. This takes precedence over 'text_max'.                                         |
 | media_loop             | boolean           | false          | Whether to loop the media files.                                         |
-| title               | HTML string      | "Drag and drop the bar to the position of the target number."                   |  html string that provides instructions to the participant. This is presented above the canvas container. |
-| line_type           | string           | "universal"        | The type of number line task per Cohen & Ray (2020) Dev. Psychol. which controls the placement of labels and slider area (“bounded” = lower and upper label at ends of white line that spans line_length, “unbounded” = lower and upper labels, or “universal”)                                         |
+| preamble               | HTML string      | "Drag and drop the bar to the position of the target number."                   |  html string that provides instructions to the participant. This is presented above the canvas container. |
 | canvas_width        | numeric          | 500                | array indicating the width of the canvas container in pixels                                         |
 | canvas_height       | numeric          | 100                | array indicating the height of the canvas container in pixels                                         |
-| start_tick_coords          | array of numerics | [10,50]           | array indicating the x and y location of the starting location (in pixels)                                         |
+| background_color        | string           | "#DDDDDD"         | hexadecimal code for the color of canvas background.                                         |
+| line_type           | string           | "universal"        | The type of number line task per Cohen & Ray (2020) Dev. Psychol. which controls the placement of labels and slider area (“bounded” = lower and upper label at ends of white line that spans line_length, “unbounded” = lower and upper labels, or “universal”)                                         |
 | line_length         | numeric          | 300                | the length of the white line in pixels; it must be less than the canvas_width. The upper right anchor will be placed at this value                                         |
+| response_line_color        | string             | "#ff0000"         | hexadecimal code for the color of the line drawn from the lower tick to the handle.                                         |
+| start_tick_coords          | array of numerics | [10,50]           | array indicating the x and y location of the starting location (in pixels)                                         |
+| label_line_distance        | numeric           | 5         | the distance (number of pixels) of the label from the line                                |
+| custom_ticks        | array of arrays  | null         | array of length two arrays with each array having a numeric proportion and string label indicating the relative position of the tick label along the number line with 0 being the start of the line and 1 being equal to "line_length" (e.g., [[0.25, "25%"],[0.5, "50%"],[0.75, "75%"]]) |
 | response_max_length | numeric          | 400                | the max length of the red response line in pixels; it must be less than the canvas_width. This determines the max response value in pixels                                         |
-| trial_end_button    | HTML string      | "FINISH"           | html for button that ends the trial                                         |
-| custom_ticks        | array of arrays  | null         | array of length two arrays with each array having a numeric proportion (0 to 1) and string label indicating the relative position of the tick label along the number line (e.g., [[0.25, "25%"],[0.5, "50%"],[0.75, "75%"]]) |
-| require_interaction | boolean          | true               | bool indicating whether the participant needs to interact with the handle before the trial_end_button is enabled                                         |
 | text_color          | string           | "#0044BB"         | hexadecimal code for the font color of text labels.                                         |
 | handle_color        | string           | "#ffffff"         | hexadecimal code for the color of the slider handle.                                         |
 | slider_color        | string           | "#000000"         | hexadecimal code for the color of the slider.                                         |
-| line_color        | string             | "#ff0000"         | hexadecimal code for the color of the line drawn from the lower tick to the handle.                                         |
-| background_color        | string           | "#DDDDDD"         | hexadecimal code for the color of canvas background.                                         |
-
+| trial_end_button    | HTML string      | "FINISH"           | html for button that ends the trial                                         |
+| require_interaction | boolean          | true               | bool indicating whether the participant needs to interact with the handle before the trial_end_button is enabled                                         |
 
 When using media, they are displayed in the same pixel resolution of the corresponding files and must be hosted on a server.
 
@@ -155,7 +155,7 @@ var trial = {
     canvas_height: 300,
     line_length: 400,
     response_max_length: 500,
-    preamble: `Estimate the location of the number`,
+    preamble: `Estimate the location of the entropy`,
     text_color: '0x0044BB',
     require_interaction: true, 
     trial_end_button: "Submit",        
