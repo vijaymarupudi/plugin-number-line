@@ -14,7 +14,7 @@ Install the plugin per standard JsPsych plugin utilization instructions.
 
 ## Documentation
 
-See [documentation](/plugin-number-line/README.md)
+See [documentation](/plugin-number-line/README.md](https://github.com/vijaymarupudi/plugin-number-line/blob/master/docs/plugin-number-line.md))
 
 ## Author / Citation
 
