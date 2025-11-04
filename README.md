@@ -2,11 +2,11 @@
 
 ## Overview
 
-An implemention of a number line estimation task outlined by Cohen and Ray
+An implemention of a number line estimation task outlined by Cohen and Ray.
 
 ## Loading
 
-*Enter instructions for loading the plugin package here.*
+Install the plugin per standard JsPsych plugin utilization instructions.
 
 ## Compatibility
 
@@ -18,4 +18,4 @@ See [documentation](/plugin-number-line/README.md)
 
 ## Author / Citation
 
-jsPsych hackathon
+This project was developed during the 2025 jsPsych hackathon. For more information, refer to the ReadMe file!
