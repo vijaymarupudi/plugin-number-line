@@ -113,23 +113,28 @@ const { Application, Graphics, Container, Text, Assets, Sprite } = window.PIXI
 import { version } from "../package.json";
 
 function add_slider(app: typeof Application.prototype, line_type, text_min, text_max, start_tick_coords, line_length, line_thickness, custom_ticks, text_stimulus, text_color, response_max_length, media_stimulus, media_max, media_min, media_loop, handle_color, slider_color, response_line_color, on_first_move, label_line_distance) {
+  // assigning width and height of the section that contains the slider
   const stage_width = app.screen.width;
   const stage_height = app.screen.height;
   app.stage.hitArea = app.screen;
 
+  // assigning thickness to slider and tick marks
   const slider_width = line_length;
   const slider_thickness = line_thickness;
   const tick_width = slider_thickness;
   const tick_half_width = tick_width / 2;
 
+  // assigning colors to relevant lines
   console.log("slider_color",slider_color);
   console.log("handle_color",handle_color);
   console.log("response_line_color",response_line_color);
 
+  // assigning slider location
   const slider = new Graphics().rect(0, -slider_thickness / 2, slider_width, slider_thickness).fill({ color: slider_color });
   slider.x = start_tick_coords[0] + tick_half_width;
   slider.y = start_tick_coords[1];
-  
+
+  // assigning start and end tick locations
   const start_tick = new Graphics().rect(0, 0, slider_thickness, slider_thickness * 8).fill({ color: slider_color });
   const end_tick = new Graphics().rect(0, 0, slider_thickness, slider_thickness * 8).fill({ color: slider_color });
   start_tick.x = -tick_half_width;
@@ -137,8 +142,7 @@ function add_slider(app: typeof Application.prototype, line_type, text_min, text
   end_tick.x = slider_width - tick_half_width;
   end_tick.y = -4 * slider_thickness;
 
-
-
+  // assigning all tick locations
   for (let i = 0; i < custom_ticks.length; i++) {
     const [xi, yi] = custom_ticks[i];
     const xPos = xi * slider_width;
@@ -151,14 +155,18 @@ function add_slider(app: typeof Application.prototype, line_type, text_min, text
       text: yi,
       style: { fontSize: 10, fill: text_color},
     });
-    label.anchor.set(0.5, 0); // anchor top-center
+
+    // assigning tick labels
+    label.anchor.set(0.5, 0); // the anchor is set to the top-center
     label.x = xPos;
-    label.y = start_tick.y + 8 * 4 + label_line_distance; // position just below the tick
+    label.y = start_tick.y + 8 * 4 + label_line_distance; // and the label position is just below the tick
     slider.addChild(label);
   }
   
+  // creating a handle
   const handle = new Graphics().rect(0, -4 * slider_thickness / 2, slider_thickness, 4 * slider_thickness).fill({ color: handle_color });
 
+  // assigning handle location
   const handle_half_width = handle.width / 2 ;
   handle.y = 0;
   if (line_type == "unbounded") {
@@ -167,16 +175,18 @@ function add_slider(app: typeof Application.prototype, line_type, text_min, text
     handle.x = -tick_half_width;
   }
 
+  // creating a response line
   const response_line_thickness = slider_thickness;
   const response_line = new Graphics();
 
+  // assigning response line locations
   response_line.y = 0;
   response_line.clear()
     .moveTo(-tick_half_width + handle_half_width, 0)
     .lineTo(handle.x + handle_half_width, 0)
     .stroke({ color: response_line_color, width: response_line_thickness });
 
-  // Add children in correct render order
+  // adding children in correct render order
   slider.addChild(response_line);
   slider.addChild(start_tick);
   slider.addChild(end_tick);
@@ -184,7 +194,7 @@ function add_slider(app: typeof Application.prototype, line_type, text_min, text
   app.stage.addChild(slider);
 
 
-  // Image labels
+  // creation of image labels
   if (media_stimulus != null) {
     const start_image = media_min;
     const end_image = media_max;
@@ -196,7 +206,7 @@ function add_slider(app: typeof Application.prototype, line_type, text_min, text
       Assets.load(stimulus_image)
     ]).then(([start_tex, end_tex, stim_tex]) => {
 
-      //add looping to video media
+      // looping of image labels for non-stationary media
       if(media_loop){
         if(start_tex.baseTexture.resource instanceof HTMLVideoElement){
           start_tex.baseTexture.resource.loop = true;
@@ -235,6 +245,7 @@ function add_slider(app: typeof Application.prototype, line_type, text_min, text
 
     })
   }
+  // creation of non-image labels 
   else {
     const start_label = new Text({
       text: text_min,
@@ -264,7 +275,7 @@ function add_slider(app: typeof Application.prototype, line_type, text_min, text
     start_label.addChild(stimulus_text);
   }
   
-  // === Drag logic ===
+  // dragging logic
   let dragging = false;
 
   handle.eventMode = 'static';
@@ -273,7 +284,7 @@ function add_slider(app: typeof Application.prototype, line_type, text_min, text
 
   handle.on('pointerdown', () => {
     dragging = true;
-    app.stage.eventMode = 'static'; // Make sure the stage receives events
+    app.stage.eventMode = 'static';
   });
 
   app.stage.on('pointerup', () => {
@@ -286,10 +297,11 @@ function add_slider(app: typeof Application.prototype, line_type, text_min, text
     app.stage.eventMode = 'auto';
   });
 
+  // handle movement logic
   app.stage.on('pointermove', (e) => {
     if (!dragging) return;
     const localX = slider.toLocal(e.global).x;
-    const handleX = localX - handle.width / 2; // Calculate position from the center of the handle
+    const handleX = localX - handle.width / 2;
 
     if (line_type === "universal") {
       handle.x = Math.min(response_max_length - handle_half_width, Math.max(0, handleX));
@@ -309,6 +321,8 @@ function add_slider(app: typeof Application.prototype, line_type, text_min, text
       on_first_move?.();  
     }
   });
+
+  // saving data
 
   console.log("--- Slider Info ---");
   console.log("Slider Position (x, y):", slider.x, slider.y);
@@ -336,11 +350,11 @@ function add_slider(app: typeof Application.prototype, line_type, text_min, text
   console.log("\n--- Response Line Info ---");
   console.log("Response Line Position (x, y):", response_line.x, response_line.y);
   console.log("Response Line Bounding Box:", response_line.getBounds());
-  return { handle, slider_width};      //Data saving
+  return { handle, slider_width};
 
 }
 
-
+// html structuring
 class NumberLinePlugin implements JsPsychPlugin<Info> {
   static info = info;
 
@@ -371,8 +385,6 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
         });
       container.appendChild(app.canvas);
 
-
-
       let button: HTMLButtonElement | null = null;
         
       const { handle, slider_width } = add_slider(
@@ -399,7 +411,6 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
         },
         trial.label_line_distance
       );
-      
    
         button = document.createElement("button");
 
@@ -412,7 +423,8 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
           button.disabled = true;
         }
 
-      //Data saving: click-release
+      // data saving
+      let dragging = false;
       let start_time = null;
       let first_slide_start_rt = null;
       let first_slide_end_rt = null;
@@ -432,14 +444,29 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
         last_slide_start_rt = Math.round(now - start_time);
       });
 
-      handle.on('pointerup', () => {
-        const now = performance.now();
-        if (first_slide_end_rt === null) {
-          first_slide_end_rt = Math.round(now - start_time);          
+      app.stage.on('pointerup', () => {
+        if (dragging) {
+          const now = performance.now();
+          if (first_slide_end_rt === null) {
+            first_slide_end_rt = Math.round(now - start_time);
+          }
+          last_slide_end_rt = Math.round(now - start_time);
         }
-        last_slide_end_rt = Math.round(now - start_time);
+        dragging = false;
+        app.stage.eventMode = 'auto';
       });
 
+      app.stage.on('pointerupoutside', () => {
+        if (dragging) {
+          const now = performance.now();
+          if (first_slide_end_rt === null) {
+            first_slide_end_rt = Math.round(now - start_time);
+          }
+          last_slide_end_rt = Math.round(now - start_time);
+        }
+        dragging = false;
+        app.stage.eventMode = 'auto';
+      });
       
         button.style.marginTop = "20px";
         button.style.padding = "10px";
@@ -448,25 +475,30 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
         container.appendChild(button);
 
         button.addEventListener("click", () => {
-          const end_rt = Math.round(performance.now() - start_time);   // Reaction time when the finish button is clicked (ms)
-          const handleCenterX = handle.x + handle.width / 2; // Handle center position in pixels
+          const now = performance.now();
+          if (first_slide_end_rt === null) {
+            first_slide_end_rt = Math.round(now - start_time);
+          }
+          if (last_slide_end_rt === null) {
+            last_slide_end_rt = Math.round(now - start_time);
+          }
+          const end_rt = Math.round(now - start_time);
+          const handleCenterX = handle.x + handle.width / 2;
 
-        this.jsPsych.finishTrial({
-          final_handle_position: handleCenterX,  // Final handle position in pixels (absolute x-coordinate on the slider)
-          slider_start_timestamp: Math.round(start_time), // Timestamp when the slider is rendered (miliseconds)
-          response_rt: end_rt,   // Reaction time when the "Finish" button is clicked (milliseconds)
-          first_slide_start_rt: first_slide_start_rt,   // Response time of the first pointerdown event on the handle (milliseconds)
-          first_slide_end_rt: first_slide_end_rt,   // Response time of the first pointerup event on the handle (milliseconds)
-          last_slide_start_rt: last_slide_start_rt,   // Response time of the last pointerdown event on the handle (milliseconds)
-          last_slide_end_rt: last_slide_end_rt,   // Response time of the last pointerup event on the handle (milliseconds)
-          drag_count: drag_count,   // Total number of complete drag actions (pointerdown + pointerup pairs)
-         });
+          this.jsPsych.finishTrial({
+            final_handle_position: handleCenterX,
+            slider_start_timestamp: Math.round(start_time),
+            response_rt: end_rt,
+            first_slide_start_rt: first_slide_start_rt,
+            first_slide_end_rt: first_slide_end_rt,
+            last_slide_start_rt: last_slide_start_rt,
+            last_slide_end_rt: last_slide_end_rt,
+            drag_count: drag_count,
+          });
         });
 
       start_time = performance.now();
-      
     })();
-
   }
 }
 
