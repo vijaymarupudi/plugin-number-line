@@ -1,5 +1,5 @@
 {
-  "name": "plugin-number-line",
+  "name": "@vijaymarupudi/plugin-number-line",
   "version": "0.0.1",
   "description": "An implemention of a number line estimation task outlined by Cohen and Ray",
   "type": "module",
