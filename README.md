@@ -31,7 +31,6 @@ If you are using a build system, import the plugin using:
 import jsPsychNumberLine from '@vijaymarupudi/plugin-number-line'
 ```
 
-
 ## Compatibility
 
 `plugin-number-line` requires jsPsych v8.0.0 or later.
