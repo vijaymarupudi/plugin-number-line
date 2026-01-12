@@ -1,9 +1,10 @@
 import typescript from '@rollup/plugin-typescript';
 import json from '@rollup/plugin-json';
+import { minify } from 'rollup-plugin-esbuild-minify'
 
 export default {
   input: "src/index.ts",
-  plugins: [json(), typescript()],
+  plugins: [json(), typescript(), minify()],
   output: [
     {
       file: "dist/index.mjs",
