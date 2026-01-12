@@ -1,4 +1,6 @@
 import { JsPsych, JsPsychPlugin, ParameterType, TrialType } from "jspsych";
+import { version } from "../package.json";
+import { Application, Graphics, Container, Text, Assets, Sprite } from 'pixi.js'
 
 const info = <const>{
   name: "plugin-number-line",
@@ -102,15 +104,6 @@ const info = <const>{
 
 type Info = typeof info;
 
-declare global {
-  interface Window {
-    PIXI: any
-  }
-}
-
-const { Application, Graphics, Container, Text, Assets, Sprite } = window.PIXI
-
-import { version } from "../package.json";
 
 function add_slider(app: typeof Application.prototype, line_type, text_min, text_max, start_tick_coords, line_length, line_thickness, custom_ticks, text_stimulus, text_color, response_max_length, media_stimulus, media_max, media_min, media_loop, handle_color, slider_color, response_line_color, on_first_move, label_line_distance) {
   // assigning width and height of the section that contains the slider

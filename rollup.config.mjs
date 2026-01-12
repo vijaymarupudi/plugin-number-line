@@ -1,7 +1,22 @@
-import { makeRollupConfig } from "@jspsych/config/rollup";
+import typescript from '@rollup/plugin-typescript';
+import json from '@rollup/plugin-json';
 
-const config = makeRollupConfig("jsPsychPluginNumberLine");
-
-// config.output.globals = {'PIXI': 'pixi.js'}
-
-export default config
+export default {
+  input: "src/index.ts",
+  plugins: [json(), typescript()],
+  output: [
+    {
+      file: "dist/index.mjs",
+      format: "es"
+    },
+    {
+      file: "dist/index.browser.js",
+      format: "umd",
+      name: "jsPsychPluginNumberLine",
+      globals: {
+        "pixi.js": "PIXI",
+        "jspsych": "jsPsychModule"
+      }
+    }],
+  external: ["pixi.js", "jspsych"]
+}

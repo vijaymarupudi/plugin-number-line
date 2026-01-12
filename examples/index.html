@@ -3,18 +3,16 @@
 
 <head>
   <title>jsPsychPluginNumberLine Example</title>
-  <script src="https://unpkg.com/jspsych"></script>
-  <!-- Load the published plugin package here, e.g.
-<script src="https://unpkg.com/plugin-number-line"></script>
-<script src="../dist/index.global.js"></script> -->
-  <script src="https://pixijs.download/v8.9.2/pixi.min.js"></script>
-  <script src="../dist/index.browser.js"></script>
-  <link rel="stylesheet" href="https://unpkg.com/jspsych/css/jspsych.css">
+<script src="https://unpkg.com/pixi.js/dist/pixi.min.js"></script>
+<script src="https://unpkg.com/jspsych/dist/index.browser.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/jspsych/css/jspsych.css">
+<script src="../dist/index.browser.js"></script>
+
 </head>
 
 <body></body>
 <script>
-  const jsPsych = initJsPsych({on_finish: function () {
+  const jsPsych = jsPsychModule.initJsPsych({on_finish: function () {
       const csv = jsPsych.data.get().csv();
       const blob = new Blob([csv], { type: 'text/csv' });
       const url = URL.createObjectURL(blob);

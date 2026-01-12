@@ -1,9 +1,7 @@
 {
-    "extends": "@jspsych/config/tsconfig.contrib.json",
-    "compilerOptions": {
-      "baseUrl": ".",
-      "resolveJsonModule": true
-    },
-    "include": ["src"]
+  "compilerOptions": {
+    "target": "es2024",
+    "resolveJsonModule": true,
+    "esModuleInterop": true
   }
-  
+}
