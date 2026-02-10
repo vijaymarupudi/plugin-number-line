@@ -11,7 +11,8 @@ export function calculateHandleX(
   } else if (line_type === "bounded") {
     return Math.max(-tick_half_width, Math.min(handleX, slider_width - handle_half_width));
   } else if (line_type === "unbounded") {
-    return Math.min(response_max_length - handle_half_width, Math.max(-tick_half_width, Math.max(handleX, slider_width - handle_half_width)));
+    const upperBoundStart = slider_width - handle_half_width;
+    return Math.max(upperBoundStart, Math.min(handleX, response_max_length - handle_half_width));
   }
   return handleX;
 }
