@@ -1,6 +1,7 @@
 import { JsPsych, JsPsychPlugin, ParameterType, TrialType } from "jspsych";
 import { version } from "../package.json";
 import { Application, Graphics, Container, Text, Assets, Sprite } from 'pixi.js'
+import { calculateHandleX } from "./utils"; //handle movement logic
 
 const info = <const>{
   name: "plugin-number-line",
@@ -290,19 +291,23 @@ function add_slider(app: typeof Application.prototype, line_type, text_min, text
     app.stage.eventMode = 'auto';
   });
 
-  // handle movement logic
+
+
   app.stage.on('pointermove', (e) => {
     if (!dragging) return;
     const localX = slider.toLocal(e.global).x;
-    const handleX = localX - handle.width / 2;
+    const rawHandleX = localX - handle.width / 2;
 
-    if (line_type === "universal") {
-      handle.x = Math.min(response_max_length - handle_half_width, Math.max(0, handleX));
-    } else if (line_type === "bounded") {
-      handle.x = Math.max(-tick_half_width, Math.min(handleX, slider_width - handle_half_width)); 
-    } else if (line_type === "unbounded") {
-      handle.x = Math.min(response_max_length - handle_half_width, Math.max(-tick_half_width, Math.max(handleX, slider_width - handle_half_width))); // 변경
-    }
+    handle.x = calculateHandleX(
+      rawHandleX, 
+      line_type, 
+      slider_width, 
+      handle_half_width, 
+      tick_half_width, 
+      response_max_length
+    );
+
+    
 
     response_line.clear()
       .moveTo(-tick_half_width + handle_half_width, 0)
