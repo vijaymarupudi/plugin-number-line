@@ -484,7 +484,7 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
           const handleCenterX = handle.x + handle.width / 2;
 
           this.jsPsych.finishTrial({
-            final_handle_position: handleCenterX,
+            final_handle_position: Math.round(handleCenterX),
             slider_start_timestamp: Math.round(start_time),
             response_rt: end_rt,
             first_slide_start_rt: first_slide_start_rt,
