@@ -24,6 +24,7 @@ In addition to the [parameters available in all plugins](https://www.jspsych.org
 | response_line_color        | string             | "#ff0000"         | hexadecimal code for the color of the line drawn from the lower tick to the handle.                                         |
 | start_tick_coords          | array of numerics | [10,50]           | array indicating the x and y location of the starting location (in pixels)                                         |
 | label_line_distance        | numeric           | 5         | the distance (number of pixels) of the label from the line                                |
+| label_alignment        | string           | "center"         | Aligns the left edge, center, or right edge of the minimum, maximum, and target text or media to their associated tick positions. Accepted values are `"left"`, `"center"`, and `"right"`.                                |
 | custom_ticks        | array of arrays  | null         | array of length two arrays with each array having a numeric proportion and string label indicating the relative position of the tick label along the number line with 0 being the start of the line and 1 being equal to "line_length" (e.g., [[0.25, "25%"],[0.5, "50%"],[0.75, "75%"]]) |
 | response_max_length | numeric          | 400                | the max length of the red response line in pixels; it must be less than the canvas_width. This determines the max response value in pixels                                         |
 | text_color          | string           | "#0044BB"         | hexadecimal code for the font color of text labels.                                         |
@@ -33,6 +34,10 @@ In addition to the [parameters available in all plugins](https://www.jspsych.org
 | require_interaction | boolean          | true               | bool indicating whether the participant needs to interact with the handle before the trial_end_button is enabled                                         |
 
 When using media, they are displayed in the same pixel resolution of the corresponding files and must be hosted on a server.
+
+`label_alignment` applies to the minimum, maximum, and target labels or media.
+It does not change the alignment of the preamble, canvas, button, or custom tick
+labels. Omitting the parameter preserves the existing centered layout.
 
 ## Data Generated
 
@@ -139,6 +144,33 @@ var trial = {
 
 };
 ```
+
+### Aligning labels and media to tick marks.
+
+Set `label_alignment` to `"left"`, `"center"`, or `"right"`. The chosen
+edge or center of each label is placed at its associated tick position.
+
+```javascript
+var trial = {
+    type: jsPsychPluginNumberLine,
+    text_min: "0",
+    text_max: "50",
+    text_stimulus: "80",
+    line_type: "universal",
+    label_alignment: "left",
+    start_tick_coords: [150, 150],
+    canvas_width: 800,
+    canvas_height: 350,
+    line_length: 400,
+    response_max_length: 600,
+    preamble: `<p>Labels are left-aligned to their tick marks.</p>`,
+    require_interaction: true,
+    trial_end_button: "Submit",
+};
+```
+
+See `examples/alignment_demo.html` for text and image demonstrations of all
+three alignment options and the default centered behavior.
 
 ### Displaying an video-based number line.
 
