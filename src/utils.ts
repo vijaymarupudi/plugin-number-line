@@ -1,3 +1,27 @@
+export type LabelAlignment = "left" | "center" | "right";
+
+export function normalizeLabelAlignment(alignment?: string): LabelAlignment {
+  if (alignment === "left" || alignment === "right") {
+    return alignment;
+  }
+
+  return "center";
+}
+
+export function alignmentToAnchorX(alignment?: string): number {
+  const normalizedAlignment = normalizeLabelAlignment(alignment);
+
+  if (normalizedAlignment === "left") {
+    return 0;
+  }
+
+  if (normalizedAlignment === "right") {
+    return 1;
+  }
+
+  return 0.5;
+}
+
 export function calculateHandleX(
   handleX: number, 
   line_type: string, 

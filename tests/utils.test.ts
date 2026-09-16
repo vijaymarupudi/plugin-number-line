@@ -1,4 +1,25 @@
-import { calculateHandleX } from '../src/utils';
+import {
+  alignmentToAnchorX,
+  calculateHandleX,
+  normalizeLabelAlignment,
+} from '../src/utils';
+
+describe('Label alignment', () => {
+  test.each([
+    ['left', 0],
+    ['center', 0.5],
+    ['right', 1],
+  ])('maps %s alignment to the expected PixiJS anchor', (alignment, expectedAnchor) => {
+    expect(alignmentToAnchorX(alignment)).toBe(expectedAnchor);
+  });
+
+  test('defaults missing or invalid alignment values to center', () => {
+    expect(normalizeLabelAlignment()).toBe('center');
+    expect(normalizeLabelAlignment('invalid')).toBe('center');
+    expect(alignmentToAnchorX()).toBe(0.5);
+    expect(alignmentToAnchorX('invalid')).toBe(0.5);
+  });
+});
 
 describe('NumLin Handle Boundary Logic (CRNL Strict Compliance)', () => {
   const SLIDER_WIDTH = 250;

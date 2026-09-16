@@ -1,7 +1,11 @@
 import { JsPsych, JsPsychPlugin, ParameterType, TrialType } from "jspsych";
 import { version } from "../package.json";
 import { Application, Graphics, Container, Text, Assets, Sprite } from 'pixi.js'
-import { calculateHandleX } from "./utils"; //handle movement logic
+import {
+  alignmentToAnchorX,
+  calculateHandleX,
+  normalizeLabelAlignment,
+} from "./utils"; //handle movement and label alignment logic
 
 const info = <const>{
   name: "plugin-number-line",
@@ -95,6 +99,11 @@ const info = <const>{
     label_line_distance: {
       type: ParameterType.INT,
       default: 5, 
+    },
+    label_alignment: {
+      type: ParameterType.SELECT,
+      options: ["left", "center", "right"],
+      default: "center",
     }
   },
   data: {
@@ -106,7 +115,7 @@ const info = <const>{
 type Info = typeof info;
 
 
-function add_slider(app: typeof Application.prototype, line_type, text_min, text_max, start_tick_coords, line_length, line_thickness, custom_ticks, text_stimulus, text_color, response_max_length, media_stimulus, media_max, media_min, media_loop, handle_color, slider_color, response_line_color, on_first_move, label_line_distance) {
+function add_slider(app: typeof Application.prototype, line_type, text_min, text_max, start_tick_coords, line_length, line_thickness, custom_ticks, text_stimulus, text_color, response_max_length, media_stimulus, media_max, media_min, media_loop, handle_color, slider_color, response_line_color, on_first_move, label_line_distance, label_alignment) {
   // assigning width and height of the section that contains the slider
   const stage_width = app.screen.width;
   const stage_height = app.screen.height;
@@ -117,6 +126,8 @@ function add_slider(app: typeof Application.prototype, line_type, text_min, text
   const slider_thickness = line_thickness;
   const tick_width = slider_thickness;
   const tick_half_width = tick_width / 2;
+  const normalized_label_alignment = normalizeLabelAlignment(label_alignment);
+  const label_anchor_x = alignmentToAnchorX(normalized_label_alignment);
 
   // assigning colors to relevant lines
   console.log("slider_color",slider_color);
@@ -215,7 +226,7 @@ function add_slider(app: typeof Application.prototype, line_type, text_min, text
       
       const start_sprite = new Sprite(start_tex);
       start_sprite.name = "start_img";
-      start_sprite.anchor.set(0.5, 0);
+      start_sprite.anchor.set(label_anchor_x, 0);
       start_sprite.x = 0;
       start_sprite.y = start_tick.height + 5;
 
@@ -223,7 +234,7 @@ function add_slider(app: typeof Application.prototype, line_type, text_min, text
   
       const end_sprite = new Sprite(end_tex);
       end_sprite.name = "end_img";
-      end_sprite.anchor.set(0.5, 0);
+      end_sprite.anchor.set(label_anchor_x, 0);
       end_sprite.x = 0;
       end_sprite.y = end_tick.height + 5;
 
@@ -231,7 +242,7 @@ function add_slider(app: typeof Application.prototype, line_type, text_min, text
   
       const stim_sprite = new Sprite(stim_tex);
       stim_sprite.name = "stimulus_img";
-      stim_sprite.anchor.set(0.5, 0);
+      stim_sprite.anchor.set(label_anchor_x, 0);
       stim_sprite.x = 0;
       stim_sprite.y = start_sprite.height + 10;
 
@@ -243,27 +254,27 @@ function add_slider(app: typeof Application.prototype, line_type, text_min, text
   else {
     const start_label = new Text({
       text: text_min,
-      style: { fill: text_color, fontSize: 14, fontFamily: 'Arial' },
+      style: { fill: text_color, fontSize: 14, fontFamily: 'Arial', align: normalized_label_alignment },
     });
-    start_label.anchor.set(0.5, 0);
+    start_label.anchor.set(label_anchor_x, 0);
     start_label.x = 0;
     start_label.y = start_tick.height + label_line_distance;
     start_tick.addChild(start_label);
   
     const end_label = new Text({
       text: text_max,
-      style: { fill: text_color, fontSize: 14, fontFamily: 'Arial' },
+      style: { fill: text_color, fontSize: 14, fontFamily: 'Arial', align: normalized_label_alignment },
     });
-    end_label.anchor.set(0.5, 0);
+    end_label.anchor.set(label_anchor_x, 0);
     end_label.x = 0;
     end_label.y = end_tick.height + label_line_distance;
     end_tick.addChild(end_label);
   
     const stimulus_text = new Text({
       text: text_stimulus,
-      style: { fill: text_color, fontSize: 14, fontFamily: 'Arial' },
+      style: { fill: text_color, fontSize: 14, fontFamily: 'Arial', align: normalized_label_alignment },
     });
-    stimulus_text.anchor.set(0.5, 0);
+    stimulus_text.anchor.set(label_anchor_x, 0);
     stimulus_text.x = 0;
     stimulus_text.y = start_label.height + label_line_distance;
     start_label.addChild(stimulus_text);
@@ -407,7 +418,8 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
         () => {
           if (button) button.style.display = "block";
         },
-        trial.label_line_distance
+        trial.label_line_distance,
+        trial.label_alignment
       );
    
         button = document.createElement("button");
