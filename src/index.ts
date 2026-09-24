@@ -105,6 +105,14 @@ const info = <const>{
       type: ParameterType.SELECT,
       options: ["left", "center", "right"],
       default: "center",
+    },
+    trial_end_button: {
+      type: ParameterType.HTML_STRING,
+      default: "FINISH",
+    },
+    require_interaction: {
+      type: ParameterType.BOOL,
+      default: true,
     }
   },
   data: {
