@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>jsPsychPluginNumberLine Feature Demo</title>
+  <script src="https://unpkg.com/jspsych"></script>
+  <script src="https://pixijs.download/v8.9.2/pixi.min.js"></script>
+  <script src="../dist/index.browser.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/jspsych/css/jspsych.css">
+</head>
+
+<body></body>
+<script>
+  /* initialize jsPsych */
+  const jsPsych = initJsPsych({
+    on_finish: function() {
+      jsPsych.data.displayData();
+    }
+  });
+
+  const timeline = [];
+
+  // A. Line type
+  const line_type_bounded = {
+    type: jsPsychPluginNumberLine,
+    preamble: `<h3>A-1. Line Type: bounded</h3><p>The handle moves only between the minimum and maximum ticks.</p>`,
+    background_color: "#91919182",
+    canvas_width: 700,
+    canvas_height: 350,
+    line_type: "bounded",  // bounded line
+    start_tick_coords: [100, 150],
+    line_length: 400,
+    line_thickness: 5,
+    response_max_length: 550,
+    slider_color: "#000000",
+    response_line_color: "blue",
+    handle_color: "#f5eb85",
+    text_min: "0",
+    text_max: "100",
+    text_stimulus: "37",
+    text_color: "#bef3e3",
+    label_alignment: "center",
+    label_line_distance: 5,
+    require_interaction: false,
+    trial_end_button: "Submit",
+  };
+
+  const line_type_unbounded = {
+    type: jsPsychPluginNumberLine,
+    preamble: `<h3>A-2. Line Type: unbounded</h3><p>The handle starts at the maximum tick and moves only beyond it.</p>`,
+    background_color: "#91919182",
+    canvas_width: 700,
+    canvas_height: 350,
+    line_type: "unbounded",  // unbounded line
+    start_tick_coords: [100, 150],
+    line_length: 400,
+    line_thickness: 5,
+    response_max_length: 550,
+    slider_color: "#000000",
+    response_line_color: "blue",
+    handle_color: "#f5eb85",
+    text_min: "0",
+    text_max: "100",
+    text_stimulus: "37",
+    text_color: "#bef3e3",
+    label_alignment: "center",
+    label_line_distance: 5,
+    require_interaction: false,
+    trial_end_button: "Submit",
+  };
+
+  const line_type_universal = {
+    type: jsPsychPluginNumberLine,
+    preamble: `<h3>A-3. Line Type: universal</h3><p>The handle moves freely from 0 up to response_max_length.</p>`,
+    background_color: "#91919182",
+    canvas_width: 700,
+    canvas_height: 350,
+    line_type: "universal",  // universal line
+    start_tick_coords: [100, 150],
+    line_length: 400,
+    line_thickness: 5,
+    response_max_length: 550,
+    slider_color: "#000000",
+    response_line_color: "blue",
+    handle_color: "#f5eb85",
+    text_min: "0",
+    text_max: "100",
+    text_stimulus: "37",
+    text_color: "#bef3e3",
+    label_alignment: "center",
+    label_line_distance: 5,
+    require_interaction: false,
+    trial_end_button: "Submit",
+  };
+
+  // B. Label alignment
+  const label_alignment_center = {
+    type: jsPsychPluginNumberLine,
+    preamble: `<h3>B-1. Label Alignment: center</h3><p>The center of each label is placed at its tick mark.</p>`,
+    background_color: "#91919182",
+    canvas_width: 700,
+    canvas_height: 350,
+    line_type: "bounded",
+    start_tick_coords: [100, 150],
+    line_length: 400,
+    line_thickness: 5,
+    response_max_length: 550,
+    slider_color: "#000000",
+    response_line_color: "blue",
+    handle_color: "#f5eb85",
+    text_min: "0\n(minimum)",  // multi-line text shows line alignment too
+    text_max: "100\n(maximum)",
+    text_stimulus: "37\n(target value)",
+    text_color: "#bef3e3",
+    label_alignment: "center",  // center alignment
+    label_line_distance: 5,
+    require_interaction: false,
+    trial_end_button: "Submit",
+  };
+
+  const label_alignment_left = {
+    type: jsPsychPluginNumberLine,
+    preamble: `<h3>B-2. Label Alignment: left</h3><p>The left edge of each label is placed at its tick mark.</p>`,
+    background_color: "#91919182",
+    canvas_width: 700,
+    canvas_height: 350,
+    line_type: "bounded",
+    start_tick_coords: [100, 150],
+    line_length: 400,
+    line_thickness: 5,
+    response_max_length: 550,
+    slider_color: "#000000",
+    response_line_color: "blue",
+    handle_color: "#f5eb85",
+    text_min: "0\n(minimum)",  // multi-line text shows line alignment too
+    text_max: "100\n(maximum)",
+    text_stimulus: "37\n(target value)",
+    text_color: "#bef3e3",
+    label_alignment: "left",  // left alignment
+    label_line_distance: 5,
+    require_interaction: false,
+    trial_end_button: "Submit",
+  };
+
+  const label_alignment_right = {
+    type: jsPsychPluginNumberLine,
+    preamble: `<h3>B-3. Label Alignment: right</h3><p>The right edge of each label is placed at its tick mark.</p>`,
+    background_color: "#91919182",
+    canvas_width: 700,
+    canvas_height: 350,
+    line_type: "bounded",
+    start_tick_coords: [100, 150],
+    line_length: 400,
+    line_thickness: 5,
+    response_max_length: 550,
+    slider_color: "#000000",
+    response_line_color: "blue",
+    handle_color: "#f5eb85",
+    text_min: "0\n(minimum)",  // multi-line text shows line alignment too
+    text_max: "100\n(maximum)",
+    text_stimulus: "37\n(target value)",
+    text_color: "#bef3e3",
+    label_alignment: "right",  // right alignment
+    label_line_distance: 5,
+    require_interaction: false,
+    trial_end_button: "Submit",
+  };
+
+  // C. Label line distance
+  const label_line_distance_5 = {
+    type: jsPsychPluginNumberLine,
+    preamble: `<h3>C-1. Label Line Distance: 5</h3><p>Labels sit 5px below the tick marks (default).</p>`,
+    background_color: "#91919182",
+    canvas_width: 700,
+    canvas_height: 350,
+    line_type: "bounded",
+    start_tick_coords: [100, 150],
+    line_length: 400,
+    line_thickness: 5,
+    response_max_length: 550,
+    slider_color: "#000000",
+    response_line_color: "blue",
+    handle_color: "#f5eb85",
+    text_min: "0",
+    text_max: "100",
+    text_stimulus: "37",
+    text_color: "#bef3e3",
+    label_alignment: "center",
+    label_line_distance: 5,  // 5px below the ticks
+    require_interaction: false,
+    trial_end_button: "Submit",
+  };
+
+  const label_line_distance_15 = {
+    type: jsPsychPluginNumberLine,
+    preamble: `<h3>C-2. Label Line Distance: 15</h3><p>Labels sit 15px below the tick marks.</p>`,
+    background_color: "#91919182",
+    canvas_width: 700,
+    canvas_height: 350,
+    line_type: "bounded",
+    start_tick_coords: [100, 150],
+    line_length: 400,
+    line_thickness: 5,
+    response_max_length: 550,
+    slider_color: "#000000",
+    response_line_color: "blue",
+    handle_color: "#f5eb85",
+    text_min: "0",
+    text_max: "100",
+    text_stimulus: "37",
+    text_color: "#bef3e3",
+    label_alignment: "center",
+    label_line_distance: 15,  // 15px below the ticks
+    require_interaction: false,
+    trial_end_button: "Submit",
+  };
+
+  const label_line_distance_25 = {
+    type: jsPsychPluginNumberLine,
+    preamble: `<h3>C-3. Label Line Distance: 25</h3><p>Labels sit 25px below the tick marks.</p>`,
+    background_color: "#91919182",
+    canvas_width: 700,
+    canvas_height: 350,
+    line_type: "bounded",
+    start_tick_coords: [100, 150],
+    line_length: 400,
+    line_thickness: 5,
+    response_max_length: 550,
+    slider_color: "#000000",
+    response_line_color: "blue",
+    handle_color: "#f5eb85",
+    text_min: "0",
+    text_max: "100",
+    text_stimulus: "37",
+    text_color: "#bef3e3",
+    label_alignment: "center",
+    label_line_distance: 25,  // 25px below the ticks
+    require_interaction: false,
+    trial_end_button: "Submit",
+  };
+
+  // D. Custom ticks
+  const custom_ticks_inside = {
+    type: jsPsychPluginNumberLine,
+    preamble: `<h3>D-1. Custom Ticks: Inside the Line</h3><p>Intermediate ticks at 25%, 50%, and 75% of the line.</p>`,
+    background_color: "#91919182",
+    canvas_width: 700,
+    canvas_height: 350,
+    line_type: "bounded",
+    start_tick_coords: [100, 150],
+    line_length: 400,
+    line_thickness: 5,
+    response_max_length: 550,
+    slider_color: "#000000",
+    response_line_color: "blue",
+    handle_color: "#f5eb85",
+    custom_ticks: [[0.25, "25"], [0.5, "50"], [0.75, "75"]],  // extra ticks as [proportion, label]
+    text_min: "0",
+    text_max: "100",
+    text_stimulus: "37",
+    text_color: "#bef3e3",
+    label_alignment: "center",
+    label_line_distance: 5,
+    require_interaction: false,
+    trial_end_button: "Submit",
+  };
+
+  const custom_ticks_outside = {
+    type: jsPsychPluginNumberLine,
+    preamble: `<h3>D-2. Custom Ticks: Beyond the Line</h3><p>Intermediate ticks plus one beyond the line at 125%.</p>`,
+    background_color: "#91919182",
+    canvas_width: 700,
+    canvas_height: 350,
+    line_type: "universal",  // universal, so the handle can reach the 125% tick
+    start_tick_coords: [100, 150],
+    line_length: 400,
+    line_thickness: 5,
+    response_max_length: 550,
+    slider_color: "#000000",
+    response_line_color: "blue",
+    handle_color: "#f5eb85",
+    custom_ticks: [[0.25, "25"], [0.5, "50"], [0.75, "75"], [1.25, "125"]],  // the 1.25 tick sits beyond the line
+    text_min: "0",
+    text_max: "100",
+    text_stimulus: "37",
+    text_color: "#bef3e3",
+    label_alignment: "center",
+    label_line_distance: 5,
+    require_interaction: false,
+    trial_end_button: "Submit",
+  };
+
+  // E. Label type
+  const label_type_text = {
+    type: jsPsychPluginNumberLine,
+    preamble: `<h3>E-1. Label Type: text</h3><p>Text is shown at the minimum, maximum, and target positions.</p>`,
+    background_color: "#91919182",
+    canvas_width: 700,
+    canvas_height: 350,
+    line_type: "bounded",
+    start_tick_coords: [100, 150],
+    line_length: 400,
+    line_thickness: 5,
+    response_max_length: 550,
+    slider_color: "#000000",
+    response_line_color: "blue",
+    handle_color: "#f5eb85",
+    text_min: "0",  // text at the minimum tick
+    text_max: "100",  // text at the maximum tick
+    text_stimulus: "37",  // text target
+    text_color: "#bef3e3",
+    label_alignment: "center",
+    label_line_distance: 5,
+    require_interaction: false,
+    trial_end_button: "Submit",
+  };
+
+  const label_type_image = {
+    type: jsPsychPluginNumberLine,
+    preamble: `<h3>E-2. Label Type: image</h3><p>Images replace the minimum, maximum, and target text.</p>`,
+    background_color: "#91919182",
+    canvas_width: 700,
+    canvas_height: 350,
+    line_type: "bounded",
+    start_tick_coords: [100, 150],
+    line_length: 400,
+    line_thickness: 5,
+    response_max_length: 550,
+    slider_color: "#000000",
+    response_line_color: "blue",
+    handle_color: "#f5eb85",
+    media_min: "img_min_demo.png",  // image at the minimum tick
+    media_max: "img_max_demo.png",  // image at the maximum tick
+    media_stimulus: "img_stimulus_demo.png",  // image target; required to switch to media labels
+    text_color: "#bef3e3",
+    label_alignment: "center",
+    label_line_distance: 5,
+    require_interaction: false,
+    trial_end_button: "Submit",
+  };
+
+  const label_type_video = {
+    type: jsPsychPluginNumberLine,
+    preamble: `<h3>E-3. Label Type: video</h3><p>Looping videos replace the minimum, maximum, and target text.</p>`,
+    background_color: "#91919182",
+    canvas_width: 700,
+    canvas_height: 350,
+    line_type: "bounded",
+    start_tick_coords: [100, 150],
+    line_length: 400,
+    line_thickness: 5,
+    response_max_length: 550,
+    slider_color: "#000000",
+    response_line_color: "blue",
+    handle_color: "#f5eb85",
+    media_min: "low.mp4",  // video at the minimum tick
+    media_max: "high.mp4",  // video at the maximum tick
+    media_stimulus: "med_hi.mp4",  // video target; required to switch to media labels
+    media_loop: true,  // loop the videos
+    text_color: "#bef3e3",
+    label_alignment: "center",
+    label_line_distance: 5,
+    require_interaction: false,
+    trial_end_button: "Submit",
+  };
+
+  // F. Line thickness
+  const line_thickness_default = {
+    type: jsPsychPluginNumberLine,
+    // no line_thickness parameter: the default of 4px is used
+    preamble: `<h3>F-1. Line Thickness: default (4)</h3><p>No line_thickness parameter, so the default of 4px is used.</p>`,
+    canvas_width: 700,
+    canvas_height: 350,
+    line_type: "bounded",
+    start_tick_coords: [100, 150],
+    line_length: 400,
+    response_max_length: 550,
+    text_min: "0",
+    text_max: "100",
+    text_stimulus: "37",
+    label_alignment: "center",
+    label_line_distance: 5,
+    require_interaction: false,
+    trial_end_button: "Submit",
+  };
+
+  const line_thickness_8 = {
+    type: jsPsychPluginNumberLine,
+    preamble: `<h3>F-2. Line Thickness: 8</h3><p>The line is 8px thick; ticks and handle scale with it.</p>`,
+    canvas_width: 700,
+    canvas_height: 350,
+    line_type: "bounded",
+    start_tick_coords: [100, 150],
+    line_length: 400,
+    line_thickness: 8,  // 8px line
+    response_max_length: 550,
+    text_min: "0",
+    text_max: "100",
+    text_stimulus: "37",
+    label_alignment: "center",
+    label_line_distance: 5,
+    require_interaction: false,
+    trial_end_button: "Submit",
+  };
+
+  const line_thickness_13 = {
+    type: jsPsychPluginNumberLine,
+    preamble: `<h3>F-3. Line Thickness: 13</h3><p>The line is 13px thick; ticks and handle scale with it.</p>`,
+    canvas_width: 700,
+    canvas_height: 350,
+    line_type: "bounded",
+    start_tick_coords: [100, 150],
+    line_length: 400,
+    line_thickness: 13,  // 13px line
+    response_max_length: 550,
+    text_min: "0",
+    text_max: "100",
+    text_stimulus: "37",
+    label_alignment: "center",
+    label_line_distance: 5,
+    require_interaction: false,
+    trial_end_button: "Submit",
+  };
+
+  // G. Style
+  const default_style = {
+    type: jsPsychPluginNumberLine,
+    // no color, line_thickness, or trial_end_button parameters: plugin defaults are used
+    preamble: `<h3>G-1. Default Style</h3><p>All colors, line thickness, and the button text use the plugin defaults.</p>`,
+    canvas_width: 700,
+    canvas_height: 350,
+    line_type: "bounded",
+    start_tick_coords: [100, 150],
+    line_length: 400,
+    response_max_length: 550,
+    text_min: "0",
+    text_max: "100",
+    text_stimulus: "37",
+    label_alignment: "center",
+    label_line_distance: 5,
+    require_interaction: false,
+  };
+
+  const custom_style_1 = {
+    type: jsPsychPluginNumberLine,
+    preamble: `<h3>G-2. Custom Style: Example 1</h3>`,
+    background_color: "#1e2a3a",  // custom background
+    canvas_width: 700,
+    canvas_height: 350,
+    line_type: "bounded",
+    start_tick_coords: [100, 150],
+    line_length: 400,
+    line_thickness: 10,  // thicker line
+    response_max_length: 550,
+    slider_color: "#e0e0e0",  // custom line color
+    response_line_color: "#2ec4b6",  // custom response line color
+    handle_color: "#ff9f1c",  // custom handle color
+    text_min: "0",
+    text_max: "100",
+    text_stimulus: "37",
+    text_color: "#ffffff",  // custom label color
+    label_alignment: "center",
+    label_line_distance: 5,
+    require_interaction: false,
+    trial_end_button: "Submit",
+  };
+
+  const custom_style_2 = {
+    type: jsPsychPluginNumberLine,
+    preamble: `<h3>G-3. Custom Style: Example 2</h3>`,
+    background_color: "#fdf6e3",  // custom background
+    canvas_width: 700,
+    canvas_height: 350,
+    line_type: "bounded",
+    start_tick_coords: [100, 150],
+    line_length: 400,
+    line_thickness: 5,
+    response_max_length: 550,
+    slider_color: "#586e75",  // custom line color
+    response_line_color: "#d33682",  // custom response line color
+    handle_color: "#268bd2",  // custom handle color
+    text_min: "0",
+    text_max: "100",
+    text_stimulus: "37",
+    text_color: "#073642",  // custom label color
+    label_alignment: "center",
+    label_line_distance: 5,
+    require_interaction: false,
+    trial_end_button: "Submit",
+  };
+
+  // H. Response button
+  const require_interaction_true = {
+    type: jsPsychPluginNumberLine,
+    preamble: `<h3>H-1. Require Interaction: true</h3><p>The button stays disabled until the handle is moved.</p>`,
+    background_color: "#91919182",
+    canvas_width: 700,
+    canvas_height: 350,
+    line_type: "bounded",
+    start_tick_coords: [100, 150],
+    line_length: 400,
+    line_thickness: 5,
+    response_max_length: 550,
+    slider_color: "#000000",
+    response_line_color: "blue",
+    handle_color: "#f5eb85",
+    text_min: "0",
+    text_max: "100",
+    text_stimulus: "37",
+    text_color: "#bef3e3",
+    label_alignment: "center",
+    label_line_distance: 5,
+    require_interaction: true,  // button disabled until the handle is moved
+    trial_end_button: "Submit",
+  };
+
+  const require_interaction_false = {
+    type: jsPsychPluginNumberLine,
+    preamble: `<h3>H-2. Require Interaction: false</h3><p>The button is enabled immediately and uses custom text.</p>`,
+    background_color: "#91919182",
+    canvas_width: 700,
+    canvas_height: 350,
+    line_type: "bounded",
+    start_tick_coords: [100, 150],
+    line_length: 400,
+    line_thickness: 5,
+    response_max_length: 550,
+    slider_color: "#000000",
+    response_line_color: "blue",
+    handle_color: "#f5eb85",
+    text_min: "0",
+    text_max: "100",
+    text_stimulus: "37",
+    text_color: "#bef3e3",
+    label_alignment: "center",
+    label_line_distance: 5,
+    require_interaction: false,  // button enabled from the start
+    trial_end_button: "Next",  // custom button text
+  };
+
+  // blocks: pick which feature groups to show by commenting push lines in or out
+  const line_type_block = {
+    timeline: [
+      line_type_bounded,
+      line_type_unbounded,
+      line_type_universal,
+    ],
+  };
+
+  const label_alignment_block = {
+    timeline: [
+      label_alignment_center,
+      label_alignment_left,
+      label_alignment_right,
+    ],
+  };
+
+  const label_line_distance_block = {
+    timeline: [
+      label_line_distance_5,
+      label_line_distance_15,
+      label_line_distance_25,
+    ],
+  };
+
+  const custom_ticks_block = {
+    timeline: [
+      custom_ticks_inside,
+      custom_ticks_outside,
+    ],
+  };
+
+  const label_type_block = {
+    timeline: [
+      label_type_text,
+      label_type_image,
+      label_type_video,
+    ],
+  };
+
+  const line_thickness_block = {
+    timeline: [
+      line_thickness_default,
+      line_thickness_8,
+      line_thickness_13,
+    ],
+  };
+
+  const style_block = {
+    timeline: [
+      default_style,
+      custom_style_1,
+      custom_style_2,
+    ],
+  };
+
+  const response_button_block = {
+    timeline: [
+      require_interaction_true,
+      require_interaction_false,
+    ],
+  };
+
+  timeline.push(line_type_block);
+  timeline.push(label_alignment_block);
+  timeline.push(label_line_distance_block);
+  timeline.push(custom_ticks_block);
+  timeline.push(label_type_block);
+  timeline.push(line_thickness_block);
+  timeline.push(style_block);
+  timeline.push(response_button_block);
+
+  jsPsych.run(timeline);
+</script>
+
+</html>
