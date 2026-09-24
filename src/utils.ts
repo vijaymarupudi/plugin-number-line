@@ -22,6 +22,19 @@ export function alignmentToAnchorX(alignment?: string): number {
   return 0.5;
 }
 
+// returns the label x (in parent coords) that keeps the requested anchor but
+// snaps the label's left edge to a whole canvas pixel, so text is not blurred.
+// origin_x is the parent's x position on the canvas.
+export function snapLabelX(
+  center_x: number,
+  label_width: number,
+  anchor_x: number,
+  origin_x = 0
+): number {
+  const left = origin_x + center_x - label_width * anchor_x;
+  return Math.round(left) - origin_x + label_width * anchor_x;
+}
+
 export function calculateHandleX(
   handleX: number, 
   line_type: string, 

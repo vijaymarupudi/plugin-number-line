@@ -5,6 +5,7 @@ import {
   alignmentToAnchorX,
   calculateHandleX,
   normalizeLabelAlignment,
+  snapLabelX,
 } from "./utils"; //handle movement and label alignment logic
 
 const info = <const>{
@@ -163,7 +164,7 @@ function add_slider(app: typeof Application.prototype, line_type, text_min, text
 
     // assigning tick labels
     label.anchor.set(0.5, 0); // the anchor is set to the top-center
-    label.x = xPos;
+    label.x = snapLabelX(xPos, label.width, 0.5, slider.x);
     label.y = start_tick.y + 8 * 4 + label_line_distance; // and the label position is just below the tick
     slider.addChild(label);
   }
@@ -198,6 +199,10 @@ function add_slider(app: typeof Application.prototype, line_type, text_min, text
   slider.addChild(handle);
   app.stage.addChild(slider);
 
+  // canvas x of each end tick, used to snap labels to whole pixels
+  const start_tick_origin_x = slider.x + start_tick.x;
+  const end_tick_origin_x = slider.x + end_tick.x;
+
 
   // creation of image labels
   if (media_stimulus != null) {
@@ -227,7 +232,7 @@ function add_slider(app: typeof Application.prototype, line_type, text_min, text
       const start_sprite = new Sprite(start_tex);
       start_sprite.name = "start_img";
       start_sprite.anchor.set(label_anchor_x, 0);
-      start_sprite.x = 0;
+      start_sprite.x = snapLabelX(tick_half_width, start_sprite.width, label_anchor_x, start_tick_origin_x);
       start_sprite.y = start_tick.height + 5;
 
       start_tick.addChild(start_sprite);
@@ -235,7 +240,7 @@ function add_slider(app: typeof Application.prototype, line_type, text_min, text
       const end_sprite = new Sprite(end_tex);
       end_sprite.name = "end_img";
       end_sprite.anchor.set(label_anchor_x, 0);
-      end_sprite.x = 0;
+      end_sprite.x = snapLabelX(tick_half_width, end_sprite.width, label_anchor_x, end_tick_origin_x);
       end_sprite.y = end_tick.height + 5;
 
       end_tick.addChild(end_sprite);
@@ -243,7 +248,7 @@ function add_slider(app: typeof Application.prototype, line_type, text_min, text
       const stim_sprite = new Sprite(stim_tex);
       stim_sprite.name = "stimulus_img";
       stim_sprite.anchor.set(label_anchor_x, 0);
-      stim_sprite.x = 0;
+      stim_sprite.x = snapLabelX(0, stim_sprite.width, label_anchor_x, start_tick_origin_x + start_sprite.x);
       stim_sprite.y = start_sprite.height + 10;
 
       start_sprite.addChild(stim_sprite);
@@ -257,7 +262,7 @@ function add_slider(app: typeof Application.prototype, line_type, text_min, text
       style: { fill: text_color, fontSize: 14, fontFamily: 'Arial', align: normalized_label_alignment },
     });
     start_label.anchor.set(label_anchor_x, 0);
-    start_label.x = 0;
+    start_label.x = snapLabelX(tick_half_width, start_label.width, label_anchor_x, start_tick_origin_x);
     start_label.y = start_tick.height + label_line_distance;
     start_tick.addChild(start_label);
   
@@ -266,7 +271,7 @@ function add_slider(app: typeof Application.prototype, line_type, text_min, text
       style: { fill: text_color, fontSize: 14, fontFamily: 'Arial', align: normalized_label_alignment },
     });
     end_label.anchor.set(label_anchor_x, 0);
-    end_label.x = 0;
+    end_label.x = snapLabelX(tick_half_width, end_label.width, label_anchor_x, end_tick_origin_x);
     end_label.y = end_tick.height + label_line_distance;
     end_tick.addChild(end_label);
   
@@ -275,7 +280,7 @@ function add_slider(app: typeof Application.prototype, line_type, text_min, text
       style: { fill: text_color, fontSize: 14, fontFamily: 'Arial', align: normalized_label_alignment },
     });
     stimulus_text.anchor.set(label_anchor_x, 0);
-    stimulus_text.x = 0;
+    stimulus_text.x = snapLabelX(0, stimulus_text.width, label_anchor_x, start_tick_origin_x + start_label.x);
     stimulus_text.y = start_label.height + label_line_distance;
     start_label.addChild(stimulus_text);
   }
