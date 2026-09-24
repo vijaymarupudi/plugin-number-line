@@ -457,6 +457,7 @@ class NumberLinePlugin implements JsPsychPlugin<Info> {
 
       handle.on('pointerdown', () => {
         const now = performance.now();
+        dragging = true;
         drag_count += 1;
         if (first_slide_start_rt === null) {
           first_slide_start_rt = Math.round(now - start_time);
