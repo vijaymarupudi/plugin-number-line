@@ -23,25 +23,47 @@
 
   const trial1 = {
     type: jsPsychPluginNumberLine,
-    text_min: "0",
-    text_max: "100",
-    line_type: "bounded",
-    text_stimulus:"add text \n stimulus here",
-    start_tick_coords: [50, 150],
+    preamble: `<h3>Bounded Type Demo</h3><p>Estimate the location of the number</p>`,
+
+    // background
+    background_color:"#91919182",
     canvas_width: 600,
     canvas_height: 300,
+
+    // line
+    line_type: "bounded",
+    start_tick_coords: [50, 150],
     line_length: 500,
     line_thickness: 5,
     response_max_length: 500,
-    preamble: `<h3>Bounded Type Demo</h3><p>Estimate the location of the number</p>`,
-    text_color: '#bef3e3',
-    require_interaction: true, 
-    trial_end_button: "Submit",  
-    handle_color:"#f5eb85",
     slider_color:"#000000",
-    background_color:"#91919182",
     response_line_color:"blue",
-    label_line_distance: 10
+    handle_color:"#f5eb85",
+    
+    // stimulus
+    text_stimulus:"add text\nstimulus here",
+    text_min: "0\n(text_min)",
+    text_max: "1\n(text_max)",
+    text_color: '#bef3e3',
+    label_alignment: "center",
+    label_line_distance: 5,
+    custom_ticks: [[0.25, "0.25"],[0.5, "0.5"],[0.75, "0.75"]],
+    
+
+    require_interaction: true,
+    trial_end_button: "Submit"
+  };
+
+  const trial1_left = {
+    ...trial1,
+    preamble: `<h3>Label Alignment: Left</h3><p>The left edge of each label is placed at its tick mark</p>`,
+    label_alignment: "left",
+  };
+
+  const trial1_right = {
+    ...trial1,
+    preamble: `<h3>Label Alignment: Right</h3><p>The right edge of each label is placed at its tick mark</p>`,
+    label_alignment: "right",
   };
 
   const trial2 = {
@@ -138,7 +160,7 @@
 };
 
   
-  jsPsych.run([trial1,trial2,trial3,trial4,trial5,trial6])
+  jsPsych.run([trial1,trial1_left,trial1_right,trial2,trial3,trial4,trial5,trial6])
 </script>
 
 </html>
