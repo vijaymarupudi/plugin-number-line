@@ -8,26 +8,27 @@ In addition to the [parameters available in all plugins](https://www.jspsych.org
 
 | Parameter           | Type             | Default Value      | Description                              |
 | ------------------- | ---------------- | ------------------ | ---------------------------------------- |
-| text_stimulus            | string           | "8"                | String to be displayed as the text element target.                                         |
-| text_min           | string           | "0"                | String indicating the text element to display at the lower anchor                                         |
-| text_max           | string           | "10"               | String indicating the text element to display at the upper-right anchor                                         |
-| media_stimulus        | string           | undefined          | The path of the media file to be displayed as the target. This takes precedence over 'text_stimulus'.                                         |
-| media_min             | string           | undefined          | The path of the media file to display at the lower anchor. This takes precedence over 'text_min'.                                         |
-| media_max             | string           | undefined          | The path of the media file to display at the upper-right anchor. This takes precedence over 'text_max'.                                         |
+| text_stimulus            | string           | ""                | String to be displayed as the text element target. It is shown below the minimum label.                                         |
+| text_min           | string           | ""                | String indicating the text element to display at the lower anchor                                         |
+| text_max           | string           | ""               | String indicating the text element to display at the upper-right anchor                                         |
+| media_stimulus        | string           | null          | The path of the media file to be displayed as the target. When set, the minimum, maximum, and target labels are all rendered as media, so `media_min` and `media_max` must also be set. The text parameters are ignored in this case.                                         |
+| media_min             | string           | null          | The path of the media file to display at the lower anchor. Only used when `media_stimulus` is set.                                         |
+| media_max             | string           | null          | The path of the media file to display at the upper-right anchor. Only used when `media_stimulus` is set.                                         |
 | media_loop             | boolean           | false          | Whether to loop the media files.                                         |
-| preamble               | HTML string      | "Drag and drop the bar to the position of the target number."                   |  html string that provides instructions to the participant. This is presented above the canvas container. |
-| canvas_width        | numeric          | 500                | array indicating the width of the canvas container in pixels                                         |
-| canvas_height       | numeric          | 100                | array indicating the height of the canvas container in pixels                                         |
+| preamble               | HTML string      | "Drag the handle to estimate a value."                   |  html string that provides instructions to the participant. This is presented above the canvas container. |
+| canvas_width        | numeric          | 600                | the width of the canvas container in pixels                                         |
+| canvas_height       | numeric          | 300                | the height of the canvas container in pixels                                         |
 | background_color        | string           | "#DDDDDD"         | hexadecimal code for the color of canvas background.                                         |
-| line_type           | string           | "universal"        | The type of number line task per Cohen & Ray (2020) Dev. Psychol. which controls the placement of labels and slider area (“bounded” = lower and upper label at ends of white line that spans line_length, “unbounded” = lower and upper labels, or “universal”)                                         |
-| line_length         | numeric          | 300                | the length of the white line in pixels; it must be less than the canvas_width. The upper right anchor will be placed at this value                                         |
+| line_type           | string           | "universal"        | The type of number line task per Cohen & Ray (2020) Dev. Psychol. which controls the placement of labels and slider area (“bounded” = lower and upper label at ends of the line that spans line_length, “unbounded” = lower and upper labels, or “universal”). Accepted values are `"bounded"`, `"unbounded"`, and `"universal"`.                                         |
+| line_length         | numeric          | 250                | the length of the line in pixels; it must be less than the canvas_width. The upper right anchor will be placed at this value                                         |
+| line_thickness      | numeric          | 4                  | the thickness of the line in pixels. The end ticks are 8 times this value tall and the handle is 4 times this value tall. |
 | response_line_color        | string             | "#ff0000"         | hexadecimal code for the color of the line drawn from the lower tick to the handle.                                         |
-| start_tick_coords          | array of numerics | [10,50]           | array indicating the x and y location of the starting location (in pixels)                                         |
-| label_line_distance        | numeric           | 5         | the distance (number of pixels) of the label from the line                                |
-| label_alignment        | string           | "center"         | Aligns the left edge, center, or right edge of the minimum, maximum, and target text or media to their associated tick positions. Accepted values are `"left"`, `"center"`, and `"right"`.                                |
-| custom_ticks        | array of arrays  | null         | array of length two arrays with each array having a numeric proportion and string label indicating the relative position of the tick label along the number line with 0 being the start of the line and 1 being equal to "line_length" (e.g., [[0.25, "25%"],[0.5, "50%"],[0.75, "75%"]]) |
-| response_max_length | numeric          | 400                | the max length of the red response line in pixels; it must be less than the canvas_width. This determines the max response value in pixels                                         |
-| text_color          | string           | "#0044BB"         | hexadecimal code for the font color of text labels.                                         |
+| start_tick_coords          | array of numerics | [50,150]           | array indicating the x and y location of the starting location (in pixels)                                         |
+| label_line_distance        | numeric           | 5         | the distance (number of pixels) of the text labels below the tick marks. Media labels use a fixed 5 pixel distance.                                |
+| label_alignment        | string           | "center"         | Aligns the left edge, center, or right edge of the minimum and maximum text or media to their tick marks. The target is placed below the minimum label and uses the same alignment. Accepted values are `"left"`, `"center"`, and `"right"`.                                |
+| custom_ticks        | array of arrays  | []         | array of length two arrays with each array having a numeric proportion and string label indicating the relative position of the tick label along the number line with 0 being the start of the line and 1 being equal to "line_length" (e.g., [[0.25, "25%"],[0.5, "50%"],[0.75, "75%"]]) |
+| response_max_length | numeric          | 500                | the max length of the response line in pixels; it must be less than the canvas_width. This determines the max response value in pixels                                         |
+| text_color          | string           | "#000000"         | hexadecimal code for the font color of text labels.                                         |
 | handle_color        | string           | "#ffffff"         | hexadecimal code for the color of the slider handle.                                         |
 | slider_color        | string           | "#000000"         | hexadecimal code for the color of the slider.                                         |
 | trial_end_button    | HTML string      | "FINISH"           | html for button that ends the trial                                         |
@@ -37,7 +38,20 @@ When using media, they are displayed in the same pixel resolution of the corresp
 
 `label_alignment` applies to the minimum, maximum, and target labels or media.
 It does not change the alignment of the preamble, canvas, button, or custom tick
-labels. Omitting the parameter preserves the existing centered layout.
+labels (custom tick labels are always centered on their ticks). With the default
+`"center"`, labels are centered on the middle of their tick marks. For multi-line
+text, each line is also aligned to the same side.
+
+The target label is positioned relative to the minimum label, not directly to the
+minimum tick, so the two always share the same alignment edge.
+
+Labels are shifted by up to half a pixel so that they start on a whole pixel and
+render sharply.
+
+> **Note:** With `"left"`, the maximum label extends to the right of the end tick;
+> with `"right"`, the minimum and target labels extend to the left of the start tick.
+> Make sure `start_tick_coords` and `canvas_width` leave enough room, or the labels
+> will be clipped at the canvas edge.
 
 ## Data Generated
 
@@ -50,9 +64,9 @@ In addition to the [default data collected by all plugins](https://www.jspsych.o
 | first_slide_end_rt | numeric |  Response time (ms) when the initial mouse up event occurred on the slider handle (i.e., stopped sliding). |
 | last_slide_start_rt | numeric | Response time (ms) when the latest mouse down event occurred on the slider handle (i.e., started sliding). |
 | last_slide_end_rt | numeric |  Response time (ms) when the latest mouse up event occurred on the slider handle (i.e., stopped sliding). |
-| final_handle_position  | numeric | Indicates the numeric value in pixels of the position of the center of the handle from the center of the minimum tick mark along the x-axis.                                         |
+| final_handle_position  | numeric | Indicates the numeric value in pixels of the position of the center of the handle from the center of the minimum tick mark along the x-axis, rounded to the nearest integer pixel.                                         |
 | response_rt        | numeric | The response time in milliseconds for the participant to make a response. The time is measured from when the slider first appears on the screen until the participant selects the trial_end button.                                         |
-| drag_count | numeric | The number of times the handle was released during a trial.             |
+| drag_count | numeric | The number of times the handle was pressed (i.e., drag attempts started) during a trial.             |
 
 ## Install
 
@@ -148,7 +162,8 @@ var trial = {
 ### Aligning labels and media to tick marks.
 
 Set `label_alignment` to `"left"`, `"center"`, or `"right"`. The chosen
-edge or center of each label is placed at its associated tick position.
+edge or center of the minimum and maximum labels is placed at the center of their
+tick marks, and the target label below the minimum label uses the same edge.
 
 ```javascript
 var trial = {
@@ -169,8 +184,7 @@ var trial = {
 };
 ```
 
-See `examples/alignment_demo.html` for text and image demonstrations of all
-three alignment options and the default centered behavior.
+See `examples/hackathon_demo.html` for center, left, and right alignment examples.
 
 ### Displaying an video-based number line.
 
